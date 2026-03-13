@@ -1,0 +1,22 @@
+.window {
+    position: absolute;
+    box-sizing: border-box; /* If this is not border-box, the getRect width and css width will not match which will cause the window to grow by 6px when moved*/
+}
+
+.title-bar-text {
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    overflow: hidden;
+    user-select: none;
+}
+
+.window-body {
+    overflow: auto;
+    text-wrap: nowrap;
+    margin-bottom: 0 !important;
+}
+
+.window {
+    display: flex;
+    flex-direction: column;
+}

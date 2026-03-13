@@ -1,0 +1,105 @@
+#OS {
+    width: 100dvw;
+    height: 100dvh;
+    position: relative;
+    background-color: #008080;
+    display: flex;
+}
+
+#taskbar {
+    background: #c0c0c0;
+
+    box-shadow:
+            0 -1px 0 0 #ffffff,
+            0 -2px 0 0 #dfdfdf;
+    height: 30px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+}
+
+#window-area {
+    flex: 1;
+}
+
+#start {
+    min-width: 0;
+    margin: 2px;
+    font-size: 13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 26px;
+    padding: 5px;
+}
+
+.divider-1 {
+    margin: 2px;
+    width: 0;
+    position: relative;
+    height: 26px;
+    border-left: solid 1px #808080;
+    border-right: solid 1px #ffffff;
+    cursor: w-resize;
+}
+/*Expand interactable area*/
+.divider-1::before {
+    content: "";
+    position: absolute;
+    right: -5px;
+    left: -5px;
+    top: 0;
+    bottom: 0;
+}
+
+.divider-2 {
+    width: 1px;
+    height: 20px;
+    background-color: #c0c0c0;
+    box-shadow:
+            0px -1px 0 0 #ffffff,
+            -1px -1px 0 0 #ffffff,
+            1px -1px 0 0 #808080,
+
+            -1px 0px 0 0 #ffffff,
+            -1px 1px 0 0 #808080,
+
+            0px 1px 0 0 #808080,
+            1px 1px 0 0 #808080;
+    margin: 2px;
+}
+
+#taskbar-right {
+    margin-left: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#status-menu {
+    height: 20px;
+    margin: 0 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px 10px
+}
+
+#clock {
+    margin: 0;
+    font-family: Pixelated MS Sans Serif, Arial, sans-serif;
+    user-select: none;
+}
+
+#logo {
+    width: 15px;
+    margin-right: 3px;
+}
+
+#desktop {
+    height: 100%;
+    width: 100%;
+}

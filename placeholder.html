@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Gradyn Website</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>
+            h1 {
+                font-family: sans-serif;
+                background: linear-gradient(225deg, #ffabab, #ffdaab, #ddffab, #abe4ff, #d9abff);
+
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+                color: transparent;
+            }
+
+            #spinny-boi {
+                animation: spin 20s linear infinite;
+            }
+            body {
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 0;
+            }
+
+            @keyframes spin {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            #come-back-later {
+                position: absolute;
+                bottom: 100px;
+                right: 10px;
+                transform: rotate(-45deg);
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="spinny-boi">I am remaking the website</h1>
+        <h1 id="come-back-later">Come back later</h1>
+    </body>
+</html>

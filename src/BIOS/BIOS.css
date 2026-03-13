@@ -1,0 +1,39 @@
+#BIOS {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    background-color: black;
+}
+
+#bios-label {
+    color: blue;
+    font-size: clamp(2.5rem, 3vw, 4rem);
+    text-align: center;
+    margin: 10px;
+    position: fixed;
+    top: 30%;
+    width: 100%;
+    font-family: "VT323", monospace;
+}
+
+#bios-options {
+    color: white;
+    font-size: clamp(1rem, 2vw, 2rem);
+    text-align: left;
+    position: fixed;
+    top: 0;
+    right: 20px;
+    font-family: "VT323", monospace;
+}
+
+#bios-domain {
+    color: white;
+    font-size: clamp(1rem, 1vw, 1rem);
+    position: fixed;
+    top: 50%;
+    width: 100%;
+    text-align: center;
+    font-family: "VT323", monospace;
+}

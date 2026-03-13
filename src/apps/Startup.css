@@ -1,0 +1,17 @@
+#startup-app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+#startup-app p {
+    font-weight: bold;
+    width: 100%;
+}
+
+
+#startup-app img {
+    width: 89px;
+}
