@@ -4,6 +4,7 @@
     position: relative;
     background-color: #008080;
     display: flex;
+    flex-direction: column;
 }
 
 #taskbar {
@@ -13,15 +14,11 @@
             0 -1px 0 0 #ffffff,
             0 -2px 0 0 #dfdfdf;
     height: 30px;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
     display: flex;
     align-items: center;
 }
 
-#window-area {
+#drag-area {
     flex: 1;
 }
 
@@ -102,4 +99,21 @@
 #desktop {
     height: 100%;
     width: 100%;
+}
+
+.desktop-icon {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: Pixelated MS Sans Serif, Arial, sans-serif;
+    color: white;
+    padding: 10px;
+    gap: 3px;
+    cursor: pointer;
+}
+
+.desktop-icon p {
+    margin: 0;
+    user-select: none;
 }

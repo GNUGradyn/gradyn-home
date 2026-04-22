@@ -14,7 +14,7 @@ import type {ComponentType, ReactNode} from "react";
  */
 export default interface AppModel {
     name: string;
-    icon: ReactNode;
+    icon: string;
     identifier: string;
     component: ComponentType<AppProps>;
     isHidden?: boolean;

@@ -7,6 +7,7 @@ import {produce} from "immer";
 import "./OS.css";
 import SlowLoad from "./SlowLoad.tsx";
 import Logo from "../assets/img/g-os-bare.svg";
+import AppRegistry from "../AppRegistry.ts";
 
 interface OsProps {
     isBooted: boolean;
@@ -96,10 +97,7 @@ const OS = (props: OsProps) => {
 
     return (
         <div id="OS">
-            <div id="window-area">
-                <div id="desktop">
-
-                </div>
+            <div id="drag-area">
                 <DragDropProvider onDragEnd={(event) => {
                     const resultRect = event.operation.source?.element?.getBoundingClientRect();
                     updateRunningApp(event.operation.source?.id as number, (draft) => {
@@ -112,6 +110,14 @@ const OS = (props: OsProps) => {
                     });
                 }}
                 >
+                    <div id="desktop">
+                        {AppRegistry.filter(x => !x.isHidden).map(app => (
+                            <div className="desktop-icon">
+                                <img src={app.icon} alt={app.name + " App (Desktop Icon)"} onClick={() => runApp(app)} />
+                                <p>{app.name}</p>
+                            </div>
+                        ))}
+                    </div>
                     {runningApps.map((appModel) => <RunningApp
                             key={appModel.id}
                             app={appModel.app}
