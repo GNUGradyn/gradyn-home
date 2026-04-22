@@ -9,6 +9,8 @@ import SlowLoad from "./SlowLoad.tsx";
 import Logo from "../assets/img/g-os-bare.svg";
 import AppRegistry from "../AppRegistry.ts";
 
+const DESKTOP_LOAD_START = 6000;
+
 interface OsProps {
     isBooted: boolean;
     skipBoot: () => void;
@@ -88,7 +90,7 @@ const OS = (props: OsProps) => {
         };
     }, []);
 
-    const updateRunningApp  = useCallback((app: number, producer: (draft: RunningApp) => void) => {
+    const updateRunningApp = useCallback((app: number, producer: (draft: RunningApp) => void) => {
         setRunningApps(prev => produce(prev, draft => {
             const index = draft.findIndex(runningApp => runningApp.id === app);
             producer(draft[index]);
@@ -110,14 +112,19 @@ const OS = (props: OsProps) => {
                     });
                 }}
                 >
-                    <div id="desktop">
-                        {AppRegistry.filter(x => !x.isHidden).map(app => (
-                            <div className="desktop-icon">
-                                <img src={app.icon} alt={app.name + " App (Desktop Icon)"} onClick={() => runApp(app)} />
-                                <p>{app.name}</p>
-                            </div>
-                        ))}
-                    </div>
+                    <SlowLoad duration={DESKTOP_LOAD_START}>
+                        <div id="desktop">
+                            {AppRegistry.filter(x => !x.isHidden).map(app => (
+                                <SlowLoad>
+                                    <div className="desktop-icon">
+                                        <img src={app.icon} alt={app.name + " App (Desktop Icon)"}
+                                             onClick={() => runApp(app)}/>
+                                        <p>{app.name}</p>
+                                    </div>
+                                </SlowLoad>
+                            ))}
+                        </div>
+                    </SlowLoad>
                     {runningApps.map((appModel) => <RunningApp
                             key={appModel.id}
                             app={appModel.app}
@@ -128,7 +135,7 @@ const OS = (props: OsProps) => {
                     )}
                 </DragDropProvider>
             </div>
-            <SlowLoad duration={6000}>
+            <SlowLoad duration={DESKTOP_LOAD_START}>
                 <div id="taskbar">
                     <SlowLoad>
                         <button id="start">
