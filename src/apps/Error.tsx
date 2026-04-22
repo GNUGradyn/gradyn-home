@@ -1,11 +1,11 @@
 import type IApp from "./AppModel.ts";
 import {type AppProps} from "./AppModel.ts";
-import Icon from "../assets/img/windows98-icons/ico/chm.ico";
+import Icon from "../assets/img/windows98-icons/ico/msg_error.ico";
 import Loader from "../assets/img/loading.gif";
 import "./Startup.css";
 import {useEffect, useState} from "react";
 
-const Component = (props: AppProps) => {
+const Error = (props: AppProps) => {
     const [loadingDots, setLoadingDots] = useState(0);
 
     useEffect(() => {
@@ -30,10 +30,10 @@ const Component = (props: AppProps) => {
 }
 
 const Startup: IApp = {
-    name: "Starting Gradyn OS",
-    identifier: "startup",
-    icon: null,
-    component: Component,
+    name: "Error",
+    identifier: "error",
+    icon: Icon,
+    component: Error,
     isHidden: true,
     isSpecial: true,
     singleInstance: true,

@@ -42,9 +42,13 @@ const OS = (props: OsProps) => {
     const [runningApps, setRunningApps] = useState<RunningApp[]>([]);
     const dragAreaRef = useRef<HTMLDivElement>(null);
 
+    const showError = useCallback((message: string) => {
+
+    })
+
     const findNextWindowStartPosition = (windowHeight: number, windowWidth: number) => {
-        const maxWidth = dragAreaRef.current!.clientWidth - windowWidth;
-        const maxHeight = dragAreaRef.current!.clientHeight - windowHeight;
+        const maxWidth = dragAreaRef.current!.clientWidth - (windowWidth + + WINDOW_OVERLAP_SHIFT_INTERVAL);
+        const maxHeight = dragAreaRef.current!.clientHeight - (windowHeight + WINDOW_OVERLAP_SHIFT_INTERVAL);
 
         const result = {
             vertical: WINDOW_OVERLAP_SHIFT_INTERVAL,
@@ -72,20 +76,25 @@ const OS = (props: OsProps) => {
     };
 
     const runApp = useCallback((app: AppModel, pos?: AppPos) => {
+        if (!pos) {
+            const newPos = findNextWindowStartPosition(app.initialHeight, app.initialWidth);
+
+            if (newPos == null) {
+                alert("Stop (TODO: better error)");
+                return;
+            }
+
+            pos = {
+                top: newPos.vertical,
+                left: newPos.horizontal,
+                bottom: newPos.vertical + app.initialHeight,
+                right: newPos.horizontal + app.initialWidth
+            }
+        }
+
         setRunningApps(prev => {
             if (app.singleInstance && prev.some(x => x.app.identifier === app.identifier)) {
                 return prev;
-            }
-
-            if (!pos) {
-                const newPos = findNextWindowStartPosition(app.initialHeight, app.initialWidth);
-
-                pos = {
-                    top: newPos.vertical,
-                    left: newPos.horizontal,
-                    bottom: newPos.vertical + app.initialHeight,
-                    right: newPos.horizontal + app.initialWidth
-                }
             }
 
             return [

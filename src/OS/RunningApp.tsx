@@ -72,6 +72,7 @@ const RunningApp = (props: RunningAppProps) => {
             }}/>
             <div className="title-bar" ref={draggableHandleRef}>
                 <div className="title-bar-text">
+                    {props.app.icon && <img src={props.app.icon} alt=""/>}
                     {props.app.name}
                 </div>
             </div>

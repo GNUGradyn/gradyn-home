@@ -8,6 +8,14 @@
     text-wrap: nowrap;
     overflow: hidden;
     user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+.title-bar-text img {
+    height: 13px;
 }
 
 .window-body {
