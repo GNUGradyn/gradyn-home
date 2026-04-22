@@ -1,4 +1,5 @@
 import {createContext, type PropsWithChildren, useContext, useEffect, useState} from "react";
+import BootState, {INITIAL_BOOT_STATE} from "../models/BootState.ts";
 
 interface SlowLoadProps extends PropsWithChildren {
     minDuration?: number;
@@ -21,7 +22,7 @@ const SlowLoaderContext = createContext({
  * @constructor
  */
 const SlowLoad = (props: SlowLoadProps) => {
-    const [loaded, setLoaded] = useState(false);
+    const [loaded, setLoaded] = useState(INITIAL_BOOT_STATE !== BootState.BIOS);
     const slowLoaderContext = useContext(SlowLoaderContext);
 
     useEffect(() => {

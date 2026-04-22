@@ -20,6 +20,8 @@ export default interface AppModel {
     isHidden?: boolean;
     isSpecial?: boolean;
     singleInstance?: boolean;
+    initialHeight: number;
+    initialWidth: number;
 }
 
 export interface AppProps {

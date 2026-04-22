@@ -8,8 +8,14 @@ import "./OS.css";
 import SlowLoad from "./SlowLoad.tsx";
 import Logo from "../assets/img/g-os-bare.svg";
 import AppRegistry from "../AppRegistry.ts";
+import BootState, {INITIAL_BOOT_STATE} from "../models/BootState.ts";
 
 const DESKTOP_LOAD_START = 6000;
+// How far to shift the window down and to the right when launching an app and the top left corner is too close to another windows top left corner
+const WINDOW_OVERLAP_SHIFT_INTERVAL = 50;
+// How close one windows top left corner can be to another windows top left corner on launch before shifting
+const WINDOW_OVERLAP_MARGIN = 10;
+const STARTUP_APP_SIZE = 100;
 
 interface OsProps {
     isBooted: boolean;
@@ -29,12 +35,41 @@ export interface AppPos {
     right: number;
 }
 
-const STARTUP_APP_SIZE = 100;
 
 const OS = (props: OsProps) => {
     const currentId = useRef(0);
     const [time, setTime] = useState("");
     const [runningApps, setRunningApps] = useState<RunningApp[]>([]);
+    const dragAreaRef = useRef<HTMLDivElement>(null);
+
+    const findNextWindowStartPosition = (windowHeight: number, windowWidth: number) => {
+        const maxWidth = dragAreaRef.current!.clientWidth - windowWidth;
+        const maxHeight = dragAreaRef.current!.clientHeight - windowHeight;
+
+        const result = {
+            vertical: WINDOW_OVERLAP_SHIFT_INTERVAL,
+            horizontal: WINDOW_OVERLAP_SHIFT_INTERVAL
+        };
+
+        let column = 1;
+
+        while (result.vertical <= maxHeight || result.horizontal <= maxWidth) {
+            if (runningApps.some(app => Math.abs(app.pos.top - result.vertical) < WINDOW_OVERLAP_MARGIN && Math.abs(app.pos.left - result.horizontal) < WINDOW_OVERLAP_MARGIN)) {
+                if (result.vertical >= maxHeight) {
+                    column++;
+                    result.vertical = WINDOW_OVERLAP_SHIFT_INTERVAL + (column * 10); // The vertical shift on wrap is not authentic but the real way 98 handles this is lame and this feels "correct", some mandela effect stuff I guess
+                    result.horizontal = column * WINDOW_OVERLAP_SHIFT_INTERVAL;
+                } else {
+                    result.vertical += WINDOW_OVERLAP_SHIFT_INTERVAL;
+                    result.horizontal += WINDOW_OVERLAP_SHIFT_INTERVAL;
+                }
+            } else {
+                return result;
+            }
+        }
+
+        alert("bugged af")
+    };
 
     const runApp = useCallback((app: AppModel, pos?: AppPos) => {
         setRunningApps(prev => {
@@ -42,24 +77,31 @@ const OS = (props: OsProps) => {
                 return prev;
             }
 
+            if (!pos) {
+                const newPos = findNextWindowStartPosition(app.initialHeight, app.initialWidth);
+
+                pos = {
+                    top: newPos.vertical,
+                    left: newPos.horizontal,
+                    bottom: newPos.vertical + app.initialHeight,
+                    right: newPos.horizontal + app.initialWidth
+                }
+            }
+
             return [
                 ...prev,
                 {
                     app,
                     id: ++currentId.current,
-                    pos: pos ?? { // TODO: default to default window position or a bit down and right if there is already a window there etc
-                        top: 0,
-                        left: 0,
-                        bottom: 0,
-                        right: 0
-                    }
+                    pos: pos
                 }
             ];
         });
-    }, []);
+    }, [findNextWindowStartPosition]);
 
     useEffect(() => {
         const windowTimeout = setTimeout(() => {
+            if (INITIAL_BOOT_STATE !== BootState.BIOS) return;
             setRunningApps([{
                 app: Startup,
                 pos: {
@@ -73,6 +115,7 @@ const OS = (props: OsProps) => {
         }, 500);
 
         const loadingTimeout = setTimeout(() => {
+            if (INITIAL_BOOT_STATE !== BootState.BIOS) return;
             setRunningApps([]);
         }, 5500);
 
@@ -99,7 +142,7 @@ const OS = (props: OsProps) => {
 
     return (
         <div id="OS">
-            <div id="drag-area">
+            <div id="drag-area" ref={dragAreaRef}>
                 <DragDropProvider onDragEnd={(event) => {
                     const resultRect = event.operation.source?.element?.getBoundingClientRect();
                     if (!resultRect || resultRect.height == 0) return; // Likely the element was removed, e.g. user was dragging a window that closed, e.g. user was dragging the startup window when the sequence advanced
@@ -118,7 +161,6 @@ const OS = (props: OsProps) => {
                             console.error("Unknown element class name: " + event.operation.source?.element?.className) // TODO: error window for this?
                             break;
                     }
-
                 }}
                 >
                     <SlowLoad duration={DESKTOP_LOAD_START}>

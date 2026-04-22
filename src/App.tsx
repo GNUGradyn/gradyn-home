@@ -2,15 +2,10 @@ import './App.css'
 import {useEffect, useRef, useState} from "react";
 import BIOS from "./BIOS/BIOS.tsx";
 import OS from "./OS/OS.tsx";
+import BootState, {INITIAL_BOOT_STATE} from "./models/BootState.ts";
 
-enum BootState {
-    BIOS,
-    OsLoad,
-    Booted
-}
-
-function App() {
-    const [bootState, setbootState] = useState(BootState.BIOS);
+const App = () => {
+    const [bootState, setbootState] = useState(INITIAL_BOOT_STATE);
 
     // #region BIOS
     const [loadBar, setLoadBar] = useState(0.01);
@@ -45,4 +40,4 @@ function App() {
     )
 }
 
-export default App
+export default App;

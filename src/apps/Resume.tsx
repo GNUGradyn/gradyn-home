@@ -14,7 +14,9 @@ const Resume: IApp = {
     name: "Resume",
     identifier: "resume",
     icon: Icon,
-    component: Component
+    component: Component,
+    initialWidth: 350,
+    initialHeight: 500
 }
 
 export default Resume;

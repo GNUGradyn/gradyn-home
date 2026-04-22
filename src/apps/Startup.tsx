@@ -36,7 +36,9 @@ const Startup: IApp = {
     component: Component,
     isHidden: true,
     isSpecial: true,
-    singleInstance: true
+    singleInstance: true,
+    initialWidth: 0, // not used for this window
+    initialHeight: 0 // not used for this window
 }
 
 export default Startup;
