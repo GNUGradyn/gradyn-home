@@ -102,14 +102,23 @@ const OS = (props: OsProps) => {
             <div id="drag-area">
                 <DragDropProvider onDragEnd={(event) => {
                     const resultRect = event.operation.source?.element?.getBoundingClientRect();
-                    updateRunningApp(event.operation.source?.id as number, (draft) => {
-                        draft.pos = {
-                            top: resultRect?.top ?? 0,
-                            left: resultRect?.left ?? 0,
-                            bottom: resultRect?.bottom ?? 0,
-                            right: resultRect?.right ?? 0,
-                        }
-                    });
+                    if (!resultRect || resultRect.height == 0) return; // Likely the element was removed, e.g. user was dragging a window that closed, e.g. user was dragging the startup window when the sequence advanced
+                    switch (event.operation.source?.element?.className) {
+                        case "window":
+                            updateRunningApp(event.operation.source?.id as number, (draft) => {
+                                draft.pos = {
+                                    top: resultRect?.top ?? 0,
+                                    left: resultRect?.left ?? 0,
+                                    bottom: resultRect?.bottom ?? 0,
+                                    right: resultRect?.right ?? 0,
+                                }
+                            });
+                            break;
+                        default:
+                            console.error("Unknown element class name: " + event.operation.source?.element?.className) // TODO: error window for this?
+                            break;
+                    }
+
                 }}
                 >
                     <SlowLoad duration={DESKTOP_LOAD_START}>

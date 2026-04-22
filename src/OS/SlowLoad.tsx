@@ -4,6 +4,7 @@ interface SlowLoadProps extends PropsWithChildren {
     minDuration?: number;
     maxDuration?: number;
     duration?: number;
+    noShift?: boolean;
 }
 
 // This context is to notify child SlowLoads that there is a parent SlowLoad that has not loaded yet
@@ -13,7 +14,9 @@ const SlowLoaderContext = createContext({
 });
 
 /**
- * You can "wrap" slow loaded elements. E.g. you can put the start button in the taskbar and the taskbar will slow load first then the start button. min and max duration is ignored if duration is specified. Defaults to 500-1000ms
+ * You can "wrap" slow loaded elements. E.g. you can put the start button in the taskbar and the taskbar will slow load first then the start button.
+ * min and max duration is ignored if duration is specified.
+ * Specifying `noShift` will cause the element to be invisible instead of being entirely removed from the flow of the page
  * @param props
  * @constructor
  */
@@ -35,7 +38,11 @@ const SlowLoad = (props: SlowLoadProps) => {
     // OPTIMIZATION: use display instead of conditional rendering so that icons and such actually load during fake loading
     return (
         <SlowLoaderContext.Provider value={{loaded}}>
-            <div style={{display: loaded ? 'block' : 'none'}}>{props.children}</div>
+            <div style={props.noShift ?
+                {visibility: loaded ? 'visible' : 'hidden'}
+                :
+                {display: loaded ? 'block' : 'none'}
+            }>{props.children}</div>
         </SlowLoaderContext.Provider>
     );
 }
