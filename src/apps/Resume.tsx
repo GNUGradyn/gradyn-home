@@ -10,7 +10,7 @@ const Component = (props: AppProps) => {
     )
 }
 
-const Resume: IApp = {
+const Resume: IApp<> = {
     name: "Resume",
     identifier: "resume",
     icon: Icon,

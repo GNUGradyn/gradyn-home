@@ -9,13 +9,15 @@ import SlowLoad from "./SlowLoad.tsx";
 import Logo from "../assets/img/g-os-bare.svg";
 import AppRegistry from "../AppRegistry.ts";
 import BootState, {INITIAL_BOOT_STATE} from "../models/BootState.ts";
+import Error from "../apps/Error.tsx";
 
 const DESKTOP_LOAD_START = 6000;
 // How far to shift the window down and to the right when launching an app and the top left corner is too close to another windows top left corner
 const WINDOW_OVERLAP_SHIFT_INTERVAL = 50;
 // How close one windows top left corner can be to another windows top left corner on launch before shifting
 const WINDOW_OVERLAP_MARGIN = 10;
-const STARTUP_APP_SIZE = 100;
+const STARTUP_APP_WIDTH = 100;
+const STARTUP_APP_HEIGHT = 100;
 
 interface OsProps {
     isBooted: boolean;
@@ -42,10 +44,6 @@ const OS = (props: OsProps) => {
     const [runningApps, setRunningApps] = useState<RunningApp[]>([]);
     const dragAreaRef = useRef<HTMLDivElement>(null);
 
-    const showError = useCallback((message: string) => {
-
-    })
-
     const findNextWindowStartPosition = (windowHeight: number, windowWidth: number) => {
         const maxWidth = dragAreaRef.current!.clientWidth - (windowWidth + WINDOW_OVERLAP_SHIFT_INTERVAL);
         const maxHeight = dragAreaRef.current!.clientHeight - (windowHeight + WINDOW_OVERLAP_SHIFT_INTERVAL);
@@ -57,7 +55,7 @@ const OS = (props: OsProps) => {
 
         let column = 1;
 
-        const newColumnPos = () => WINDOW_OVERLAP_SHIFT_INTERVAL + (column * 10); // The vertical shift on wrap is not authentic but the real way 98 handles this is lame and this feels "correct", some mandela effect stuff I guess
+        const newColumnPos = () => WINDOW_OVERLAP_SHIFT_INTERVAL + (column * 20); // The vertical shift on wrap is not authentic but the real way 98 handles this is lame and this feels "correct", some mandela effect stuff I guess
         const willVerticalShiftPushWindowOutsideDragArea = () => newColumnPos() > maxHeight;
 
         while (result.vertical <= maxHeight || (result.horizontal <= maxWidth && !willVerticalShiftPushWindowOutsideDragArea())) {
@@ -65,7 +63,7 @@ const OS = (props: OsProps) => {
                 if (result.vertical >= maxHeight) {
                     column++;
                     result.vertical = newColumnPos();
-                    result.horizontal = column * WINDOW_OVERLAP_SHIFT_INTERVAL;
+                    result.horizontal = (column + (column * 0.2)) * (windowWidth / 2);
                 } else {
                     result.vertical += WINDOW_OVERLAP_SHIFT_INTERVAL;
                     result.horizontal += WINDOW_OVERLAP_SHIFT_INTERVAL;
@@ -76,7 +74,7 @@ const OS = (props: OsProps) => {
         }
     };
 
-    const runApp = useCallback((app: AppModel, pos?: AppPos) => {
+    const runApp = useCallback(<P,>(app: AppModel<P>, pos?: AppPos, appArgs?: P) => {
         if (!pos) {
             const newPos = findNextWindowStartPosition(app.initialHeight, app.initialWidth);
 
@@ -176,7 +174,7 @@ const OS = (props: OsProps) => {
                     <SlowLoad duration={DESKTOP_LOAD_START}>
                         <div id="desktop">
                             {AppRegistry.filter(x => !x.isHidden).map(app => (
-                                <SlowLoad>
+                                <SlowLoad key={app.identifier}>
                                     <div className="desktop-icon">
                                         <img src={app.icon} alt={app.name + " App (Desktop Icon)"}
                                              onClick={() => runApp(app)}/>

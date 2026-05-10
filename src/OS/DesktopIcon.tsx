@@ -1,3 +1,5 @@
+import "./DesktopIcon.css"
+
 interface DesktopIconProps {
     icon: string;
     name: string;

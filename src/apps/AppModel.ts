@@ -1,4 +1,7 @@
-import type {ComponentType, ReactNode} from "react";
+import  {type ComponentType} from "react";
+import * as React from "react";
+
+type PropsOf<T> = T extends React.ComponentType<infer P> ? P : never;
 
 /***
  Interface representing an "installed" application.
@@ -12,11 +15,11 @@ import type {ComponentType, ReactNode} from "react";
  `isSpecial` prevents the application from being displayed in the taskbar when open. This is useful for things like
  the bootup modal or an error modal
  */
-export default interface AppModel {
+type AppModel<T> = {
     name: string;
     icon: string | null;
     identifier: string;
-    component: ComponentType<AppProps>;
+    component: ComponentType<T>;
     isHidden?: boolean;
     isSpecial?: boolean;
     singleInstance?: boolean;
@@ -24,6 +27,4 @@ export default interface AppModel {
     initialWidth: number;
 }
 
-export interface AppProps {
-
-}
+export default AppModel;
