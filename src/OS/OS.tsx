@@ -9,13 +9,15 @@ import SlowLoad from "./SlowLoad.tsx";
 import Logo from "../assets/img/g-os-bare.svg";
 import AppRegistry from "../AppRegistry.ts";
 import BootState, {INITIAL_BOOT_STATE} from "../models/BootState.ts";
+import Error from "../apps/Error.tsx";
 
 const DESKTOP_LOAD_START = 6000;
 // How far to shift the window down and to the right when launching an app and the top left corner is too close to another windows top left corner
 const WINDOW_OVERLAP_SHIFT_INTERVAL = 50;
 // How close one windows top left corner can be to another windows top left corner on launch before shifting
 const WINDOW_OVERLAP_MARGIN = 10;
-const STARTUP_APP_SIZE = 100;
+const STARTUP_APP_WIDTH = 100;
+const STARTUP_APP_HEIGHT = 100;
 
 interface OsProps {
     isBooted: boolean;
@@ -35,16 +37,20 @@ export interface AppPos {
     right: number;
 }
 
+const computeCenteredAppPos = (width: number, height: number) => {
+    return {
+        top: window.innerHeight / 2 - height,
+        left: window.innerWidth / 2 - width,
+        bottom: window.innerHeight / 2 + height,
+        right: window.innerWidth / 2 + width
+    }
+}
 
 const OS = (props: OsProps) => {
     const currentId = useRef(0);
     const [time, setTime] = useState("");
     const [runningApps, setRunningApps] = useState<RunningApp[]>([]);
     const dragAreaRef = useRef<HTMLDivElement>(null);
-
-    const showError = useCallback((message: string) => {
-
-    })
 
     const findNextWindowStartPosition = (windowHeight: number, windowWidth: number) => {
         const maxWidth = dragAreaRef.current!.clientWidth - (windowWidth + + WINDOW_OVERLAP_SHIFT_INTERVAL);
@@ -61,8 +67,9 @@ const OS = (props: OsProps) => {
             if (runningApps.some(app => Math.abs(app.pos.top - result.vertical) < WINDOW_OVERLAP_MARGIN && Math.abs(app.pos.left - result.horizontal) < WINDOW_OVERLAP_MARGIN)) {
                 if (result.vertical >= maxHeight) {
                     column++;
-                    result.vertical = WINDOW_OVERLAP_SHIFT_INTERVAL + (column * 10); // The vertical shift on wrap is not authentic but the real way 98 handles this is lame and this feels "correct", some mandela effect stuff I guess
-                    result.horizontal = column * WINDOW_OVERLAP_SHIFT_INTERVAL;
+                    // The wrap shifting is not remotely authentic but the real way 98 handles this is lame and this feels "correct", some mandela effect stuff I guess
+                    result.vertical = WINDOW_OVERLAP_SHIFT_INTERVAL + (column * 20);
+                    result.horizontal = (column + (column * 0.2)) * (windowWidth / 2);
                 } else {
                     result.vertical += WINDOW_OVERLAP_SHIFT_INTERVAL;
                     result.horizontal += WINDOW_OVERLAP_SHIFT_INTERVAL;
@@ -75,7 +82,7 @@ const OS = (props: OsProps) => {
         alert("bugged af")
     };
 
-    const runApp = useCallback((app: AppModel, pos?: AppPos) => {
+    const runApp = useCallback(<P,>(app: AppModel<P>, pos?: AppPos, appArgs?: P) => {
         if (!pos) {
             const newPos = findNextWindowStartPosition(app.initialHeight, app.initialWidth);
 
@@ -113,12 +120,7 @@ const OS = (props: OsProps) => {
             if (INITIAL_BOOT_STATE !== BootState.BIOS) return;
             setRunningApps([{
                 app: Startup,
-                pos: {
-                    top: window.innerHeight / 2 - STARTUP_APP_SIZE,
-                    left: window.innerWidth / 2 - STARTUP_APP_SIZE,
-                    bottom: window.innerHeight / 2 + STARTUP_APP_SIZE,
-                    right: window.innerWidth / 2 + STARTUP_APP_SIZE
-                },
+                pos: computeCenteredAppPos(STARTUP_APP_WIDTH, STARTUP_APP_HEIGHT),
                 id: 1 // this is safe because the entire runningApps array will get cleared after "loading"
             }]);
         }, 500);
@@ -149,6 +151,14 @@ const OS = (props: OsProps) => {
         }));
     }, []);
 
+    const showError = useCallback((message: string) => {
+        runApp(Error);
+    }, [])
+
+    useEffect(() => {
+        setTimeout(() => {showError("test")}, 1000); // test
+    }, []);
+
     return (
         <div id="OS">
             <div id="drag-area" ref={dragAreaRef}>
@@ -175,7 +185,7 @@ const OS = (props: OsProps) => {
                     <SlowLoad duration={DESKTOP_LOAD_START}>
                         <div id="desktop">
                             {AppRegistry.filter(x => !x.isHidden).map(app => (
-                                <SlowLoad>
+                                <SlowLoad key={app.identifier}>
                                     <div className="desktop-icon">
                                         <img src={app.icon} alt={app.name + " App (Desktop Icon)"}
                                              onClick={() => runApp(app)}/>
