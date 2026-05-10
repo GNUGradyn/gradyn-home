@@ -47,7 +47,7 @@ const OS = (props: OsProps) => {
     })
 
     const findNextWindowStartPosition = (windowHeight: number, windowWidth: number) => {
-        const maxWidth = dragAreaRef.current!.clientWidth - (windowWidth + + WINDOW_OVERLAP_SHIFT_INTERVAL);
+        const maxWidth = dragAreaRef.current!.clientWidth - (windowWidth + WINDOW_OVERLAP_SHIFT_INTERVAL);
         const maxHeight = dragAreaRef.current!.clientHeight - (windowHeight + WINDOW_OVERLAP_SHIFT_INTERVAL);
 
         const result = {
@@ -57,11 +57,14 @@ const OS = (props: OsProps) => {
 
         let column = 1;
 
-        while (result.vertical <= maxHeight || result.horizontal <= maxWidth) {
+        const newColumnPos = () => WINDOW_OVERLAP_SHIFT_INTERVAL + (column * 10); // The vertical shift on wrap is not authentic but the real way 98 handles this is lame and this feels "correct", some mandela effect stuff I guess
+        const willVerticalShiftPushWindowOutsideDragArea = () => newColumnPos() > maxHeight;
+
+        while (result.vertical <= maxHeight || (result.horizontal <= maxWidth && !willVerticalShiftPushWindowOutsideDragArea())) {
             if (runningApps.some(app => Math.abs(app.pos.top - result.vertical) < WINDOW_OVERLAP_MARGIN && Math.abs(app.pos.left - result.horizontal) < WINDOW_OVERLAP_MARGIN)) {
                 if (result.vertical >= maxHeight) {
                     column++;
-                    result.vertical = WINDOW_OVERLAP_SHIFT_INTERVAL + (column * 10); // The vertical shift on wrap is not authentic but the real way 98 handles this is lame and this feels "correct", some mandela effect stuff I guess
+                    result.vertical = newColumnPos();
                     result.horizontal = column * WINDOW_OVERLAP_SHIFT_INTERVAL;
                 } else {
                     result.vertical += WINDOW_OVERLAP_SHIFT_INTERVAL;
@@ -71,8 +74,6 @@ const OS = (props: OsProps) => {
                 return result;
             }
         }
-
-        alert("bugged af")
     };
 
     const runApp = useCallback((app: AppModel, pos?: AppPos) => {
