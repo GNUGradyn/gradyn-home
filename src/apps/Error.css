@@ -1,0 +1,3 @@
+#window-body {
+    line-height: 1.2px; /*pretext needs a known line height and `normal` depends on the browser*/
+}

@@ -1,6 +1,5 @@
 import type IApp from "./AppModel.ts";
 import {type AppProps} from "./AppModel.ts";
-import Icon from "../assets/img/windows98-icons/ico/chm.ico";
 import Loader from "../assets/img/loading.gif";
 import "./Startup.css";
 import {useEffect, useState} from "react";
@@ -29,7 +28,7 @@ const Component = (props: AppProps) => {
     );
 }
 
-const Startup: IApp = {
+const Startup: IApp<AppProps> = {
     name: "Starting Gradyn OS",
     identifier: "startup",
     icon: null,

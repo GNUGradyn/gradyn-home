@@ -9,6 +9,7 @@ import SlowLoad from "./SlowLoad.tsx";
 import Logo from "../assets/img/g-os-bare.svg";
 import AppRegistry from "../AppRegistry.ts";
 import BootState, {INITIAL_BOOT_STATE} from "../models/BootState.ts";
+import {layout, prepare} from "@chenglou/pretext";
 import Error from "../apps/Error.tsx";
 
 const DESKTOP_LOAD_START = 6000;
@@ -16,8 +17,7 @@ const DESKTOP_LOAD_START = 6000;
 const WINDOW_OVERLAP_SHIFT_INTERVAL = 50;
 // How close one windows top left corner can be to another windows top left corner on launch before shifting
 const WINDOW_OVERLAP_MARGIN = 10;
-const STARTUP_APP_WIDTH = 100;
-const STARTUP_APP_HEIGHT = 100;
+const STARTUP_APP_SIZE = 100;
 
 interface OsProps {
     isBooted: boolean;
@@ -44,6 +44,21 @@ const OS = (props: OsProps) => {
     const [runningApps, setRunningApps] = useState<RunningApp[]>([]);
     const dragAreaRef = useRef<HTMLDivElement>(null);
 
+    const showError = useCallback((message: string) => {
+        const bodyTextHandle = prepare(message, `"Pixelated MS Sans Serif",Arial`);
+
+        const bodyTextLayout = layout(bodyTextHandle, 500, 1.2); // see Error.css, todo dont use magic number here
+
+        const topPos = (dragAreaRef.current!.clientHeight + (bodyTextLayout.height + 33)) / 2; // 33 magic num is window height with no content, todo dont use magic number here
+
+        runApp(Error, {
+            top: topPos,
+            bottom: topPos + 33 + bodyTextLayout.height, // 33 magic num is window height with no content, todo dont use magic number here,
+            left: 10,
+            right: 100
+        }, {message})
+    }, [])
+
     const findNextWindowStartPosition = (windowHeight: number, windowWidth: number) => {
         const maxWidth = dragAreaRef.current!.clientWidth - (windowWidth + WINDOW_OVERLAP_SHIFT_INTERVAL);
         const maxHeight = dragAreaRef.current!.clientHeight - (windowHeight + WINDOW_OVERLAP_SHIFT_INTERVAL);
@@ -55,7 +70,7 @@ const OS = (props: OsProps) => {
 
         let column = 1;
 
-        const newColumnPos = () => WINDOW_OVERLAP_SHIFT_INTERVAL + (column * 20); // The vertical shift on wrap is not authentic but the real way 98 handles this is lame and this feels "correct", some mandela effect stuff I guess
+        const newColumnPos = () => WINDOW_OVERLAP_SHIFT_INTERVAL + (column * 10); // The vertical shift on wrap is not authentic but the real way 98 handles this is lame and this feels "correct", some mandela effect stuff I guess
         const willVerticalShiftPushWindowOutsideDragArea = () => newColumnPos() > maxHeight;
 
         while (result.vertical <= maxHeight || (result.horizontal <= maxWidth && !willVerticalShiftPushWindowOutsideDragArea())) {
@@ -63,7 +78,7 @@ const OS = (props: OsProps) => {
                 if (result.vertical >= maxHeight) {
                     column++;
                     result.vertical = newColumnPos();
-                    result.horizontal = (column + (column * 0.2)) * (windowWidth / 2);
+                    result.horizontal = column * WINDOW_OVERLAP_SHIFT_INTERVAL;
                 } else {
                     result.vertical += WINDOW_OVERLAP_SHIFT_INTERVAL;
                     result.horizontal += WINDOW_OVERLAP_SHIFT_INTERVAL;
@@ -79,7 +94,7 @@ const OS = (props: OsProps) => {
             const newPos = findNextWindowStartPosition(app.initialHeight, app.initialWidth);
 
             if (newPos == null) {
-                alert("Stop (TODO: better error)");
+                showError("stop");
                 return;
             }
 

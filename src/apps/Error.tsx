@@ -1,17 +1,22 @@
+import "./Error.css"
 import type IApp from "./AppModel.ts";
 import {type AppProps} from "./AppModel.ts";
 import Icon from "../assets/img/windows98-icons/ico/msg_error.ico";
 import "./Startup.css";
 
-const Component = (props: AppProps) => {
+interface ErrorProps extends AppProps {
+    message: string;
+}
+
+const Component = (props: ErrorProps) => {
     return (
         <div className="error">
-
+            {props.message}
         </div>
     );
 }
 
-const Error: IApp<> = {
+const Error: IApp<ErrorProps> = {
     name: "Error",
     identifier: "error",
     icon: Icon,
