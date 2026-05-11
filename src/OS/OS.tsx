@@ -11,6 +11,8 @@ import AppRegistry from "../AppRegistry.ts";
 import BootState, {INITIAL_BOOT_STATE} from "../models/BootState.ts";
 import {layout, prepare} from "@chenglou/pretext";
 import Error from "../apps/Error.tsx";
+import app from "../App.tsx";
+import DesktopIcon from "./DesktopIcon.tsx";
 
 const DESKTOP_LOAD_START = 6000;
 // How far to shift the window down and to the right when launching an app and the top left corner is too close to another windows top left corner
@@ -24,8 +26,8 @@ interface OsProps {
     skipBoot: () => void;
 }
 
-interface RunningApp {
-    app: AppModel;
+interface RunningApp<T> {
+    app: AppModel<T>;
     id: number;
     pos: AppPos;
 }
@@ -116,7 +118,8 @@ const OS = (props: OsProps) => {
                 {
                     app,
                     id: ++currentId.current,
-                    pos: pos
+                    pos,
+                    appArgs
                 }
             ];
         });
@@ -190,11 +193,7 @@ const OS = (props: OsProps) => {
                         <div id="desktop">
                             {AppRegistry.filter(x => !x.isHidden).map(app => (
                                 <SlowLoad key={app.identifier}>
-                                    <div className="desktop-icon">
-                                        <img src={app.icon} alt={app.name + " App (Desktop Icon)"}
-                                             onClick={() => runApp(app)}/>
-                                        <p>{app.name}</p>
-                                    </div>
+                                    <DesktopIcon icon={app.icon} name={app.name} key={app.identifier} />
                                 </SlowLoad>
                             ))}
                         </div>
@@ -205,6 +204,7 @@ const OS = (props: OsProps) => {
                             id={appModel.id}
                             pos={appModel.pos}
                             setPos={(pos) => updateRunningApp(appModel.id, (draft) => draft.pos = pos)}
+                            {...appModel.appArgs}
                         />
                     )}
                 </DragDropProvider>
