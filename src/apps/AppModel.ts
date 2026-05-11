@@ -16,7 +16,7 @@ export interface AppProps {
  `isSpecial` prevents the application from being displayed in the taskbar when open. This is useful for things like
  the bootup modal or an error modal
  */
-type AppModel<T = AppProps> = {
+type AppModel<T extends AppProps = AppProps> = {
     name: string;
     icon: string | null;
     identifier: string;

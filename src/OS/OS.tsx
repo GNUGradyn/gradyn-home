@@ -12,7 +12,7 @@ import AppRegistry from "../AppRegistry.ts";
 import BootState, {INITIAL_BOOT_STATE} from "../models/BootState.ts";
 import {layout, prepare} from "@chenglou/pretext";
 import Error from "../apps/Error.tsx";
-import app from "../App.tsx";
+import DefaultAppIcon from "../assets/img/windows98-icons/ico/executable.ico";
 import DesktopIcon from "./DesktopIcon.tsx";
 
 const DESKTOP_LOAD_START = 6000;
@@ -27,7 +27,7 @@ interface OsProps {
     skipBoot: () => void;
 }
 
-interface RunningApp<T = AppProps> {
+interface RunningApp<T extends AppProps = AppProps> {
     app: AppModel<T>;
     id: number;
     pos: AppPos;
@@ -197,7 +197,7 @@ const OS = (props: OsProps) => {
                         <div id="desktop">
                             {AppRegistry.filter(x => !x.isHidden).map(app => (
                                 <SlowLoad key={app.identifier}>
-                                    <DesktopIcon icon={app.icon} name={app.name} key={app.identifier} open={() => runApp(app)}/>
+                                    <DesktopIcon icon={app.icon ?? DefaultAppIcon} name={app.name} key={app.identifier} open={() => runApp(app)}/>
                                 </SlowLoad>
                             ))}
                         </div>
