@@ -1,7 +1,8 @@
 import  {type ComponentType} from "react";
-import * as React from "react";
 
-type PropsOf<T> = T extends React.ComponentType<infer P> ? P : never;
+export interface AppProps {
+
+}
 
 /***
  Interface representing an "installed" application.
@@ -15,7 +16,7 @@ type PropsOf<T> = T extends React.ComponentType<infer P> ? P : never;
  `isSpecial` prevents the application from being displayed in the taskbar when open. This is useful for things like
  the bootup modal or an error modal
  */
-type AppModel<T> = {
+type AppModel<T = AppProps> = {
     name: string;
     icon: string | null;
     identifier: string;
@@ -27,4 +28,4 @@ type AppModel<T> = {
     initialWidth: number;
 }
 
-export default AppModel;
+export type { AppModel as default };

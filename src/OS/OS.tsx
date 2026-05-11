@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import type AppModel from "../apps/AppModel.ts";
+import type { AppProps } from "../apps/AppModel.ts";
 import RunningApp from "./RunningApp.tsx";
 import Startup from "../apps/Startup.tsx";
 import {DragDropProvider} from "@dnd-kit/react";
@@ -26,7 +27,7 @@ interface OsProps {
     skipBoot: () => void;
 }
 
-interface RunningApp<T> {
+interface RunningApp<T = AppProps> {
     app: AppModel<T>;
     id: number;
     pos: AppPos;
@@ -43,10 +44,13 @@ export interface AppPos {
 const OS = (props: OsProps) => {
     const currentId = useRef(0);
     const [time, setTime] = useState("");
-    const [runningApps, setRunningApps] = useState<RunningApp[]>([]);
+    const [runningApps, setRunningApps] = useState<RunningApp<any>[]>([]);
     const dragAreaRef = useRef<HTMLDivElement>(null);
 
-    const showError = useCallback((message: string) => {
+    // isTechnicalError can be set to false to show "vanity" errors for easter eggs and such that are not actually issues
+    const showError = useCallback((message: string, isTechnicalError: boolean = true) => {
+        if (isTechnicalError) {console.error(message)}
+
         const bodyTextHandle = prepare(message, `"Pixelated MS Sans Serif",Arial`);
 
         const bodyTextLayout = layout(bodyTextHandle, 500, 1.2); // see Error.css, todo dont use magic number here
@@ -91,12 +95,12 @@ const OS = (props: OsProps) => {
         }
     };
 
-    const runApp = useCallback(<P,>(app: AppModel<P>, pos?: AppPos, appArgs?: P) => {
+    const runApp = useCallback(<P extends AppProps = AppProps>(app: AppModel<P>, pos?: AppPos, appArgs?: P) => {
         if (!pos) {
             const newPos = findNextWindowStartPosition(app.initialHeight, app.initialWidth);
 
             if (newPos == null) {
-                showError("stop");
+                showError("stop", false);
                 return;
             }
 
@@ -159,7 +163,7 @@ const OS = (props: OsProps) => {
         };
     }, []);
 
-    const updateRunningApp = useCallback((app: number, producer: (draft: RunningApp) => void) => {
+    const updateRunningApp = useCallback((app: number, producer: (draft: RunningApp<AppProps>) => void) => {
         setRunningApps(prev => produce(prev, draft => {
             const index = draft.findIndex(runningApp => runningApp.id === app);
             producer(draft[index]);
@@ -193,7 +197,7 @@ const OS = (props: OsProps) => {
                         <div id="desktop">
                             {AppRegistry.filter(x => !x.isHidden).map(app => (
                                 <SlowLoad key={app.identifier}>
-                                    <DesktopIcon icon={app.icon} name={app.name} key={app.identifier} />
+                                    <DesktopIcon icon={app.icon} name={app.name} key={app.identifier} open={() => runApp(app)}/>
                                 </SlowLoad>
                             ))}
                         </div>
@@ -204,7 +208,6 @@ const OS = (props: OsProps) => {
                             id={appModel.id}
                             pos={appModel.pos}
                             setPos={(pos) => updateRunningApp(appModel.id, (draft) => draft.pos = pos)}
-                            {...appModel.appArgs}
                         />
                     )}
                 </DragDropProvider>
