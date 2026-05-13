@@ -31,6 +31,7 @@ interface RunningApp<T extends AppProps = AppProps> {
     app: AppModel<T>;
     id: number;
     pos: AppPos;
+    appArgs?: T;
 }
 
 export interface AppPos {
@@ -44,7 +45,7 @@ export interface AppPos {
 const OS = (props: OsProps) => {
     const currentId = useRef(0);
     const [time, setTime] = useState("");
-    const [runningApps, setRunningApps] = useState<RunningApp<any>[]>([]);
+    const [runningApps, setRunningApps] = useState<RunningApp<AppProps>[]>([]);
     const dragAreaRef = useRef<HTMLDivElement>(null);
 
     // isTechnicalError can be set to false to show "vanity" errors for easter eggs and such that are not actually issues
@@ -123,7 +124,7 @@ const OS = (props: OsProps) => {
                     app,
                     id: ++currentId.current,
                     pos,
-                    appArgs
+                    appArgs: appArgs as AppProps
                 }
             ];
         });
@@ -202,12 +203,13 @@ const OS = (props: OsProps) => {
                             ))}
                         </div>
                     </SlowLoad>
-                    {runningApps.map((appModel) => <RunningApp
-                            key={appModel.id}
-                            app={appModel.app}
-                            id={appModel.id}
-                            pos={appModel.pos}
-                            setPos={(pos) => updateRunningApp(appModel.id, (draft) => draft.pos = pos)}
+                    {runningApps.map((runningApp) => <RunningApp
+                            key={runningApp.id}
+                            app={runningApp.app}
+                            id={runningApp.id}
+                            pos={runningApp.pos}
+                            setPos={(pos) => updateRunningApp(runningApp.id, (draft) => draft.pos = pos)}
+                            {...runningApp.appArgs}
                         />
                     )}
                 </DragDropProvider>
