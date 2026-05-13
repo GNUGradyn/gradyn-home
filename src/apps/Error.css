@@ -1,3 +1,7 @@
-#window-body {
+.error {
     line-height: 1.2px; /*pretext needs a known line height and `normal` depends on the browser*/
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }

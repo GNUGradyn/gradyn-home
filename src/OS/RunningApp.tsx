@@ -11,6 +11,9 @@ interface RunningAppProps {
     id: number,
     pos: AppPos,
     setPos: (pos: AppPos) => void
+    // See comment on RunningApp interface for why this is any
+    appArgs: any // eslint-disable-line @typescript-eslint/no-explicit-any
+    close: () => void
 }
 
 const MIN_VERTICAL_SIZE = 100;
@@ -77,7 +80,7 @@ const RunningApp = (props: RunningAppProps) => {
                 </div>
             </div>
             <div className="window-body">
-                <props.app.component/>
+                <props.app.component {...props.appArgs} close={props.close}/>
             </div>
         </div>
     );

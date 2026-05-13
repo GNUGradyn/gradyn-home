@@ -22,16 +22,14 @@ const WINDOW_OVERLAP_SHIFT_INTERVAL = 50;
 const WINDOW_OVERLAP_MARGIN = 10;
 const STARTUP_APP_SIZE = 100;
 
-interface OsProps {
-    isBooted: boolean;
-    skipBoot: () => void;
-}
-
-interface RunningApp<T extends AppProps = AppProps> {
-    app: AppModel<T>;
+// Running apps is a heterogeneous collection: each app has its own props type.
+// `runApp` checks that appArgs matches the app before insertion, then we erase
+// that specific props type here because typescript cannot represent "some P extends AppProps".
+interface RunningApp {
+    app: AppModel<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     id: number;
     pos: AppPos;
-    appArgs?: T;
+    appArgs?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export interface AppPos {
@@ -42,10 +40,10 @@ export interface AppPos {
 }
 
 
-const OS = (props: OsProps) => {
+const OS = () => {
     const currentId = useRef(0);
     const [time, setTime] = useState("");
-    const [runningApps, setRunningApps] = useState<RunningApp<AppProps>[]>([]);
+    const [runningApps, setRunningApps] = useState<RunningApp[]>([]);
     const dragAreaRef = useRef<HTMLDivElement>(null);
 
     // isTechnicalError can be set to false to show "vanity" errors for easter eggs and such that are not actually issues
@@ -80,6 +78,8 @@ const OS = (props: OsProps) => {
         const newColumnPos = () => WINDOW_OVERLAP_SHIFT_INTERVAL + (column * 10); // The vertical shift on wrap is not authentic but the real way 98 handles this is lame and this feels "correct", some mandela effect stuff I guess
         const willVerticalShiftPushWindowOutsideDragArea = () => newColumnPos() > maxHeight;
 
+        let collidingWindows = 0;
+
         while (result.vertical <= maxHeight || (result.horizontal <= maxWidth && !willVerticalShiftPushWindowOutsideDragArea())) {
             if (runningApps.some(app => Math.abs(app.pos.top - result.vertical) < WINDOW_OVERLAP_MARGIN && Math.abs(app.pos.left - result.horizontal) < WINDOW_OVERLAP_MARGIN)) {
                 if (result.vertical >= maxHeight) {
@@ -90,18 +90,34 @@ const OS = (props: OsProps) => {
                     result.vertical += WINDOW_OVERLAP_SHIFT_INTERVAL;
                     result.horizontal += WINDOW_OVERLAP_SHIFT_INTERVAL;
                 }
+                collidingWindows++;
             } else {
                 return result;
             }
         }
+
+        // I wanted a funny error (just "stop") if you spam open an app, but this can also occur e.g. if the real browser window is really small. I decided if it had to maneuver around more then 20 windows, the user is spamming an app
+        if (collidingWindows > 20) {
+            showError("stop", false);
+        } else {
+            showError("No room for another window!", false);
+        }
     };
 
-    const runApp = useCallback(<P extends AppProps = AppProps>(app: AppModel<P>, pos?: AppPos, appArgs?: P) => {
+    const closeApp = useCallback((app: number) => {
+        setRunningApps(prev => {
+            const index = prev.findIndex(runningApp => runningApp.id === app);
+            if (index === -1) return prev;
+            return [...prev.slice(0, index), ...prev.slice(index + 1)];
+        });
+    }, []);
+
+    // See RunningApp interface for explanation of any being used here
+    const runApp = useCallback(<P extends AppProps = AppProps>(app: AppModel<P>, pos?: AppPos, appArgs?: any) => {
         if (!pos) {
             const newPos = findNextWindowStartPosition(app.initialHeight, app.initialWidth);
 
             if (newPos == null) {
-                showError("stop", false);
                 return;
             }
 
@@ -118,17 +134,20 @@ const OS = (props: OsProps) => {
                 return prev;
             }
 
+            const newAppId = ++currentId.current;
+
             return [
                 ...prev,
                 {
                     app,
-                    id: ++currentId.current,
+                    id: newAppId,
                     pos,
-                    appArgs: appArgs as AppProps
+                    appArgs: appArgs as AppProps,
+                    close: () => closeApp(newAppId)
                 }
             ];
         });
-    }, [findNextWindowStartPosition]);
+    }, [closeApp, findNextWindowStartPosition]);
 
     useEffect(() => {
         const windowTimeout = setTimeout(() => {
@@ -164,11 +183,15 @@ const OS = (props: OsProps) => {
         };
     }, []);
 
-    const updateRunningApp = useCallback((app: number, producer: (draft: RunningApp<AppProps>) => void) => {
+    const updateRunningApp = useCallback((app: number, producer: (draft: RunningApp) => void) => {
         setRunningApps(prev => produce(prev, draft => {
             const index = draft.findIndex(runningApp => runningApp.id === app);
             producer(draft[index]);
         }));
+    }, []);
+
+    useEffect(() => {
+        showError("test")
     }, []);
 
     return (
@@ -209,7 +232,8 @@ const OS = (props: OsProps) => {
                             id={runningApp.id}
                             pos={runningApp.pos}
                             setPos={(pos) => updateRunningApp(runningApp.id, (draft) => draft.pos = pos)}
-                            {...runningApp.appArgs}
+                            appArgs={runningApp.appArgs}
+                            close={() => closeApp(runningApp.id)}
                         />
                     )}
                 </DragDropProvider>

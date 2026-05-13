@@ -1,7 +1,7 @@
 import  {type ComponentType} from "react";
 
 export interface AppProps {
-
+    close: () => void;
 }
 
 /***

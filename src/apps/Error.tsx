@@ -11,7 +11,8 @@ interface ErrorProps extends AppProps {
 const Component = (props: ErrorProps) => {
     return (
         <div className="error">
-            {props.message}
+            <p>{props.message}</p>
+            <button onClick={() => props.close()}>OK</button>
         </div>
     );
 }
