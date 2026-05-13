@@ -5,6 +5,7 @@ import "98.css";
 import type {AppPos} from "./OS.tsx";
 import ResizeHandle from "./ResizeHandle.tsx";
 import {ResizeHandleDirection} from "../models/ResizeHandleDirection.ts";
+import {Controls} from "../models/Controls.ts";
 
 interface RunningAppProps {
     app: AppModel,
@@ -73,11 +74,18 @@ const RunningApp = (props: RunningAppProps) => {
                     bottom: Math.max(position.y, props.pos.top + MIN_VERTICAL_SIZE)
                 });
             }}/>
-            <div className="title-bar" ref={draggableHandleRef}>
-                <div className="title-bar-text">
+            <div className="title-bar">
+                <div className="title-bar-text" ref={draggableHandleRef}>
                     {props.app.icon && <img src={props.app.icon} alt=""/>}
                     {props.app.name}
                 </div>
+                {
+                    props.app.controls !== Controls.None && (
+                        <div className="title-bar-controls" data-no-dnd="true">
+                            <button aria-label="Close" onClick={props.close}></button>
+                        </div>
+                    )
+                }
             </div>
             <div className="window-body">
                 <props.app.component {...props.appArgs} close={props.close}/>

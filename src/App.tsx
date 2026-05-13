@@ -27,10 +27,7 @@ const App = () => {
     return (
         <>
             {bootState != BootState.BIOS ?
-                <OS
-                    isBooted={bootState === BootState.Booted}
-                    skipBoot={() => setbootState(BootState.Booted)}
-                />
+                <OS/>
                 :
                 <BIOS loadBar={loadBar} onclick={() => {
                     // setbootState(BootState.OsLoad);

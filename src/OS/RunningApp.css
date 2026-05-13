@@ -12,6 +12,7 @@
     align-items: center;
     justify-content: center;
     gap: 2px;
+    cursor: grab;
 }
 
 .title-bar-text img {
@@ -27,4 +28,8 @@
 .window {
     display: flex;
     flex-direction: column;
+}
+
+.title-bar-controls button {
+    cursor: pointer;
 }

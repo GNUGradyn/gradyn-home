@@ -100,3 +100,9 @@
     height: 100%;
     width: 100%;
 }
+
+/* This is so we can attach the drag handle to title-bar-text so it doesnt include the navigation buttons */
+.title-bar-text {
+    flex: 1;
+    justify-content: flex-start;
+}

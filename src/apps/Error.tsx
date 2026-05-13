@@ -6,12 +6,19 @@ import "./Startup.css";
 
 interface ErrorProps extends AppProps {
     message: string;
+    bodyLayout: {
+        width: number;
+        height: number;
+    }
 }
 
 const Component = (props: ErrorProps) => {
     return (
         <div className="error">
-            <p>{props.message}</p>
+            <div className="error-message">
+                <img src={Icon} alt="" />
+                <p>{props.message}</p>
+            </div>
             <button onClick={() => props.close()}>OK</button>
         </div>
     );
@@ -23,7 +30,7 @@ const Error: IApp<ErrorProps> = {
     icon: Icon,
     component: Component,
     isHidden: true,
-    singleInstance: true,
+    singleInstance: false,
     initialWidth: 0, // not used for this window
     initialHeight: 0 // not used for this window
 }

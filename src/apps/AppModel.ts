@@ -1,4 +1,5 @@
 import  {type ComponentType} from "react";
+import type {Controls} from "../models/Controls.ts";
 
 export interface AppProps {
     close: () => void;
@@ -26,6 +27,7 @@ type AppModel<T extends AppProps = AppProps> = {
     singleInstance?: boolean;
     initialHeight: number;
     initialWidth: number;
+    controls?: Controls;
 }
 
 export type { AppModel as default };

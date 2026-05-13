@@ -5,3 +5,16 @@
     align-items: center;
     justify-content: center;
 }
+
+.error-message {
+    display: flex;
+    padding: 2px;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.error-message p {
+    flex: 1;
+    padding-left: 10px;
+}

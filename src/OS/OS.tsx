@@ -1,16 +1,16 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import type AppModel from "../apps/AppModel.ts";
-import type { AppProps } from "../apps/AppModel.ts";
+import type {AppProps} from "../apps/AppModel.ts";
 import RunningApp from "./RunningApp.tsx";
 import Startup from "../apps/Startup.tsx";
-import {DragDropProvider} from "@dnd-kit/react";
+import {DragDropProvider, PointerSensor} from "@dnd-kit/react";
 import {produce} from "immer";
 import "./OS.css";
 import SlowLoad from "./SlowLoad.tsx";
 import Logo from "../assets/img/g-os-bare.svg";
 import AppRegistry from "../AppRegistry.ts";
 import BootState, {INITIAL_BOOT_STATE} from "../models/BootState.ts";
-import {layout, prepare} from "@chenglou/pretext";
+import {layout, measureLineStats, prepareWithSegments} from "@chenglou/pretext";
 import Error from "../apps/Error.tsx";
 import DefaultAppIcon from "../assets/img/windows98-icons/ico/executable.ico";
 import DesktopIcon from "./DesktopIcon.tsx";
@@ -39,7 +39,6 @@ export interface AppPos {
     right: number;
 }
 
-
 const OS = () => {
     const currentId = useRef(0);
     const [time, setTime] = useState("");
@@ -48,20 +47,35 @@ const OS = () => {
 
     // isTechnicalError can be set to false to show "vanity" errors for easter eggs and such that are not actually issues
     const showError = useCallback((message: string, isTechnicalError: boolean = true) => {
-        if (isTechnicalError) {console.error(message)}
+        const MAX_ERROR_WIDTH = 500;
 
-        const bodyTextHandle = prepare(message, `"Pixelated MS Sans Serif",Arial`);
+        if (isTechnicalError) {
+            console.error(message)
+        }
 
-        const bodyTextLayout = layout(bodyTextHandle, 500, 1.2); // see Error.css, todo dont use magic number here
+        const bodyTextHandle = prepareWithSegments(message, `"Pixelated MS Sans Serif",Arial`);
 
-        const topPos = (dragAreaRef.current!.clientHeight + (bodyTextLayout.height + 33)) / 2; // 33 magic num is window height with no content, todo dont use magic number here
+        const bodyTextLayout = layout(bodyTextHandle, MAX_ERROR_WIDTH, 1.2); // see Error.css, todo dont use magic number here
+
+        const bodyLineStats = measureLineStats(bodyTextHandle, MAX_ERROR_WIDTH);
+
+        const height = 100 + bodyTextLayout.height;
+        const topPos = (dragAreaRef.current!.clientHeight / 2) - (height / 2);
+
+        const width = 150 + bodyLineStats.maxLineWidth;
+        const leftPos = (dragAreaRef.current!.clientWidth / 2) - (width / 2);
 
         runApp(Error, {
             top: topPos,
-            bottom: topPos + 33 + bodyTextLayout.height, // 33 magic num is window height with no content, todo dont use magic number here,
-            left: 10,
-            right: 100
-        }, {message})
+            bottom: topPos + height,
+            left: leftPos,
+            right: leftPos + width
+        }, {
+            message, bodyLayout: {
+                height: bodyTextLayout.height,
+                width: bodyLineStats.maxLineWidth
+            }
+        })
     }, [])
 
     const findNextWindowStartPosition = (windowHeight: number, windowWidth: number) => {
@@ -190,10 +204,6 @@ const OS = () => {
         }));
     }, []);
 
-    useEffect(() => {
-        showError("test")
-    }, []);
-
     return (
         <div id="OS">
             <div id="drag-area" ref={dragAreaRef}>
@@ -221,7 +231,8 @@ const OS = () => {
                         <div id="desktop">
                             {AppRegistry.filter(x => !x.isHidden).map(app => (
                                 <SlowLoad key={app.identifier}>
-                                    <DesktopIcon icon={app.icon ?? DefaultAppIcon} name={app.name} key={app.identifier} open={() => runApp(app)}/>
+                                    <DesktopIcon icon={app.icon ?? DefaultAppIcon} name={app.name} key={app.identifier}
+                                                 open={() => runApp(app)}/>
                                 </SlowLoad>
                             ))}
                         </div>
