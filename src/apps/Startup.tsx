@@ -3,6 +3,7 @@ import {type AppProps} from "./AppModel.ts";
 import Loader from "../assets/img/loading.gif";
 import "./Startup.css";
 import {useEffect, useState} from "react";
+import {Controls} from "../models/Controls.ts";
 
 const Component = (props: AppProps) => {
     const [loadingDots, setLoadingDots] = useState(0);
@@ -37,7 +38,8 @@ const Startup: IApp<AppProps> = {
     isSpecial: true,
     singleInstance: true,
     initialWidth: 0, // not used for this window
-    initialHeight: 0 // not used for this window
+    initialHeight: 0, // not used for this window
+    controls: Controls.None
 }
 
 export default Startup;
