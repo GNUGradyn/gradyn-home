@@ -14,6 +14,7 @@ import {layout, measureLineStats, prepareWithSegments} from "@chenglou/pretext";
 import Error from "../apps/Error.tsx";
 import DefaultAppIcon from "../assets/img/windows98-icons/ico/executable.ico";
 import DesktopIcon from "./DesktopIcon.tsx";
+import {RestrictToElement} from '@dnd-kit/dom/modifiers';
 
 const DESKTOP_LOAD_START = 6000;
 // How far to shift the window down and to the right when launching an app and the top left corner is too close to another windows top left corner
@@ -211,10 +212,36 @@ const OS = () => {
         }));
     }, []);
 
+    useEffect(() => {
+        let timer: number;
+        window.addEventListener('resize', () => {
+            clearTimeout(timer);
+            timer = setTimeout(() => { // Debounce
+                runningApps.forEach(app => {
+                    if (app.pos.bottom > dragAreaRef.current!.clientHeight) {
+                        updateRunningApp(app.id, (draft) => {
+                            const height = app.pos.bottom - app.pos.top;
+                            draft.pos.top = Math.max(dragAreaRef.current!.clientHeight - height, 0);
+                            draft.pos.bottom = dragAreaRef.current!.clientHeight;
+                        });
+                    }
+                    if (app.pos.right > dragAreaRef.current!.clientWidth) {
+                        updateRunningApp(app.id, (draft) => {
+                            const width = app.pos.right - app.pos.left;
+                            draft.pos.left = Math.max(dragAreaRef.current!.clientWidth - width, 0);
+                            draft.pos.right = dragAreaRef.current!.clientWidth;
+                        });
+                    }
+            }, 250);
+
+            });
+        });
+    }, [runningApps, updateRunningApp]);
+
     return (
         <div id="OS">
             <div id="drag-area" ref={dragAreaRef}>
-                <DragDropProvider
+                <DragDropProvider modifiers={[RestrictToElement.configure({element: dragAreaRef.current})]}
                     onDragStart={(event) => {
                         if (event.operation.source?.element?.className === "window") {
                             focusApp(parseInt(event.operation.source?.id.toString().replace("window-", "")));
@@ -255,7 +282,12 @@ const OS = () => {
                             app={runningApp.app}
                             id={runningApp.id}
                             pos={runningApp.pos}
-                            setPos={(pos) => updateRunningApp(runningApp.id, (draft) => draft.pos = pos)}
+                            setPos={(pos) => updateRunningApp(runningApp.id, (draft) => draft.pos = {
+                                left: Math.max(pos.left, 0),
+                                top: Math.max(pos.top, 0),
+                                bottom: Math.min(pos.bottom, dragAreaRef.current!.clientHeight),
+                                right: Math.min(pos.right, dragAreaRef.current!.clientWidth)
+                            })}
                             appArgs={runningApp.appArgs}
                             close={() => closeApp(runningApp.id)}
                             focus={() => focusApp(runningApp.id)}
