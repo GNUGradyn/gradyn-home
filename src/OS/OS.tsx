@@ -159,8 +159,7 @@ const OS = () => {
                     app,
                     id: newAppId,
                     pos,
-                    appArgs: appArgs as AppProps,
-                    close: () => closeApp(newAppId)
+                    appArgs: appArgs as AppProps
                 }
             ];
         });
@@ -181,7 +180,8 @@ const OS = () => {
                     bottom: window.innerHeight / 2 + STARTUP_APP_SIZE,
                     right: window.innerWidth / 2 + STARTUP_APP_SIZE
                 },
-                id: 1 // this is safe because the entire runningApps array will get cleared after "loading"
+                id: 1, // this is safe because the entire runningApps array will get cleared after "loading"
+                appArgs: {}
             }]);
         }, 500);
 

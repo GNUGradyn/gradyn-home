@@ -39,7 +39,7 @@ const RunningApp = (props: RunningAppProps) => {
             // browser window will just work smoothly without any effort
             width: props.pos.right - props.pos.left,
             height: props.pos.bottom - props.pos.top,
-            zIndex: props.zIndex
+            zIndex: props.zIndex == -1 ? "unset" : props.zIndex // startup window is shown before window stacking is inintialized
         }}>
             <ResizeHandle direction={ResizeHandleDirection.LEFT} onDrag={(position) => {
                 props.setPos({...props.pos, left: Math.min(position.x, props.pos.right - MIN_HORIZONTAL_SIZE)});
