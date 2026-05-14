@@ -46,32 +46,32 @@ const getStyles = (direction: ResizeHandleDirection) => {
             return {
                 top: -dragHandleSize,
                 left: -dragHandleSize,
-                width: 20,
-                height: 20,
+                width: dragHandleSize * 2,
+                height: dragHandleSize * 2,
                 cursor: "nwse-resize"
             }
         case ResizeHandleDirection.TOP_RIGHT:
             return {
                 top: -dragHandleSize,
                 right: -dragHandleSize,
-                width: 20,
-                height: 20,
+                width: dragHandleSize * 2,
+                height: dragHandleSize * 2,
                 cursor: "nesw-resize"
             }
         case ResizeHandleDirection.BOTTOM_LEFT:
             return {
                 bottom: -dragHandleSize,
                 left: -dragHandleSize,
-                width: 20,
-                height: 20,
+                width: dragHandleSize * 2,
+                height: dragHandleSize * 2,
                 cursor: "nesw-resize"
             }
         case ResizeHandleDirection.BOTTOM_RIGHT:
             return {
                 bottom: -dragHandleSize,
                 right: -dragHandleSize,
-                width: 20,
-                height: 20,
+                width: dragHandleSize * 2,
+                height: dragHandleSize * 2,
                 cursor: "nwse-resize"
             }
         default:
