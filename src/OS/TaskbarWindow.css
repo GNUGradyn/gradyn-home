@@ -1,0 +1,10 @@
+.taskbar-window {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 150px;
+    flex: 1;
+    justify-content: flex-start;
+    overflow: clip;
+    overflow-clip-margin: content-box;
+}

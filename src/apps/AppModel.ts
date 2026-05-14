@@ -14,7 +14,7 @@ export interface AppProps {
 
  `isHidden` is used to hide applications from the start menu, prevent it from being pinned to the taskbar, etc
 
- `isSpecial` prevents the application from being displayed in the taskbar when open. This is useful for things like
+ `isSpecial` prevents the application from being displayed in the taskbar when open and forces it to appear focused. This is useful for things like
  the bootup modal or an error modal
  */
 type AppModel<T extends AppProps = AppProps> = {

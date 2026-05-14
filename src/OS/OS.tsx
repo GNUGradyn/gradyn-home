@@ -15,6 +15,7 @@ import Error from "../apps/Error.tsx";
 import DefaultAppIcon from "../assets/img/windows98-icons/ico/executable.ico";
 import DesktopIcon from "./DesktopIcon.tsx";
 import {RestrictToElement} from '@dnd-kit/dom/modifiers';
+import TaskbarWindow from "./TaskbarWindow.tsx";
 
 const DESKTOP_LOAD_START = 6000;
 // How far to shift the window down and to the right when launching an app and the top left corner is too close to another windows top left corner
@@ -46,6 +47,7 @@ const OS = () => {
     const [runningApps, setRunningApps] = useState<RunningApp[]>([]);
     const dragAreaRef = useRef<HTMLDivElement>(null);
     const [windowStackingOrder, setWindowStackingOrder] = useState<number[]>([]);
+    const [focusedWindow, setFocusedWindow] = useState<number>(-1);
 
     // isTechnicalError can be set to false to show "vanity" errors for easter eggs and such that are not actually issues
     const showError = useCallback((message: string, isTechnicalError: boolean = true) => {
@@ -134,7 +136,7 @@ const OS = () => {
             const newPos = findNextWindowStartPosition(app.initialHeight, app.initialWidth);
 
             if (newPos == null) {
-                return;
+                return -1;
             }
 
             pos = {
@@ -164,31 +166,35 @@ const OS = () => {
                 }
             ];
         });
+
+        setFocusedWindow(newAppId);
+
+        return newAppId;
     }, [closeApp, findNextWindowStartPosition]);
 
     const focusApp = useCallback((appId: number) => {
         setWindowStackingOrder(prev => [...prev.filter(x => x !== appId), appId]);
+        setFocusedWindow(appId);
     }, []);
 
     useEffect(() => {
+        if (INITIAL_BOOT_STATE === BootState.BIOS) showError('This site is very WIP. Most stuff does not work yet. You have been warned', false);;
+
+        let startupWindowId = -1;
+
         const windowTimeout = setTimeout(() => {
             if (INITIAL_BOOT_STATE !== BootState.BIOS) return;
-            setRunningApps([{
-                app: Startup,
-                pos: {
+            startupWindowId = runApp(Startup, {
                     top: window.innerHeight / 2 - STARTUP_APP_SIZE,
                     left: window.innerWidth / 2 - STARTUP_APP_SIZE,
                     bottom: window.innerHeight / 2 + STARTUP_APP_SIZE,
                     right: window.innerWidth / 2 + STARTUP_APP_SIZE
-                },
-                id: 1, // this is safe because the entire runningApps array will get cleared after "loading"
-                appArgs: {}
-            }]);
+                });
         }, 500);
 
         const loadingTimeout = setTimeout(() => {
             if (INITIAL_BOOT_STATE !== BootState.BIOS) return;
-            setRunningApps([]);
+            closeApp(startupWindowId);
         }, 5500);
 
         const clockInterval = setInterval(() => {
@@ -239,7 +245,11 @@ const OS = () => {
 
     return (
         <div id="OS">
-            <div id="drag-area" ref={dragAreaRef}>
+            <div id="drag-area" ref={dragAreaRef} onClick={(e) => {
+                if (e.target === dragAreaRef.current) {
+                    setFocusedWindow(-1);
+                }
+            }}>
                 <DragDropProvider modifiers={[RestrictToElement.configure({element: dragAreaRef.current})]}
                                   onDragStart={(event) => {
                                       if (event.operation.source?.element?.className === "window") {
@@ -277,6 +287,7 @@ const OS = () => {
                         </div>
                     </SlowLoad>
                     {runningApps.map((runningApp) => <RunningApp
+                            focused={focusedWindow === runningApp.id}
                             key={runningApp.id}
                             app={runningApp.app}
                             id={runningApp.id}
@@ -298,7 +309,7 @@ const OS = () => {
             <SlowLoad duration={DESKTOP_LOAD_START}>
                 <div id="taskbar">
                     <SlowLoad>
-                        <button id="start">
+                        <button className="taskbar-button">
                             <img id="logo" src={Logo} alt=""/>
                             <b>Start</b>
                         </button>
@@ -306,9 +317,9 @@ const OS = () => {
                     <div className="divider-1"></div>
                     <div className="divider-2"></div>
                     <div style={{width: 100}}/>
-                    {/*Placeholders*/}
                     <div className="divider-1"></div>
                     <div className="divider-2"></div>
+                    {runningApps.map(x => <TaskbarWindow focused={focusedWindow === x.id} key={x.id} icon={x.app.icon} name={x.app.name} focusApp={() => focusApp(x.id)} />)}
                     <div id="taskbar-right">
                         <div className="divider-1"></div>
                         <div className="status-field-border" id="status-menu">

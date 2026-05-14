@@ -27,7 +27,7 @@
     flex: 1;
 }
 
-#start {
+.taskbar-button {
     min-width: 0;
     margin: 2px;
     font-size: 13px;
@@ -72,6 +72,7 @@
             0px 1px 0 0 #808080,
             1px 1px 0 0 #808080;
     margin: 2px;
+    margin-right: 5px;
 }
 
 #taskbar-right {

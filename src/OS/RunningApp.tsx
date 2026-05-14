@@ -17,6 +17,7 @@ interface RunningAppProps {
     close: () => void
     focus: () => void
     zIndex: number
+    focused: boolean
 }
 
 const MIN_VERTICAL_SIZE = 100;
@@ -77,7 +78,7 @@ const RunningApp = (props: RunningAppProps) => {
                     bottom: Math.max(position.y, props.pos.top + MIN_VERTICAL_SIZE)
                 });
             }}/>
-            <div className="title-bar">
+            <div className={["title-bar", !props.focused && "inactive"].join(" ")}>
                 <div className="title-bar-text" ref={draggableHandleRef}>
                     {props.app.icon && <img src={props.app.icon} alt=""/>}
                     {props.app.name}
