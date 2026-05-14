@@ -217,24 +217,23 @@ const OS = () => {
         window.addEventListener('resize', () => {
             clearTimeout(timer);
             timer = setTimeout(() => { // Debounce
-                runningApps.forEach(app => {
-                    if (app.pos.bottom > dragAreaRef.current!.clientHeight) {
-                        updateRunningApp(app.id, (draft) => {
-                            const height = app.pos.bottom - app.pos.top;
-                            draft.pos.top = Math.max(dragAreaRef.current!.clientHeight - height, 0);
-                            draft.pos.bottom = dragAreaRef.current!.clientHeight;
+                setRunningApps(prev =>
+                    produce(prev, draft => {
+                        draft.forEach(app => {
+                            if (app.pos.bottom > dragAreaRef.current!.clientHeight) {
+                                const height = app.pos.bottom - app.pos.top;
+                                app.pos.top = Math.max(dragAreaRef.current!.clientHeight - height, 0);
+                                app.pos.bottom = dragAreaRef.current!.clientHeight;
+                            }
+                            if (app.pos.right > dragAreaRef.current!.clientWidth) {
+                                const width = app.pos.right - app.pos.left;
+                                app.pos.left = Math.max(dragAreaRef.current!.clientWidth - width, 0);
+                                app.pos.right = dragAreaRef.current!.clientWidth;
+                            }
                         });
-                    }
-                    if (app.pos.right > dragAreaRef.current!.clientWidth) {
-                        updateRunningApp(app.id, (draft) => {
-                            const width = app.pos.right - app.pos.left;
-                            draft.pos.left = Math.max(dragAreaRef.current!.clientWidth - width, 0);
-                            draft.pos.right = dragAreaRef.current!.clientWidth;
-                        });
-                    }
-            }, 250);
-
-            });
+                    })
+                )
+            }, 50);
         });
     }, [runningApps, updateRunningApp]);
 
@@ -242,30 +241,30 @@ const OS = () => {
         <div id="OS">
             <div id="drag-area" ref={dragAreaRef}>
                 <DragDropProvider modifiers={[RestrictToElement.configure({element: dragAreaRef.current})]}
-                    onDragStart={(event) => {
-                        if (event.operation.source?.element?.className === "window") {
-                            focusApp(parseInt(event.operation.source?.id.toString().replace("window-", "")));
-                        }
-                    }}
-                    onDragEnd={(event) => {
-                    const resultRect = event.operation.source?.element?.getBoundingClientRect();
-                    if (!resultRect || resultRect.height == 0) return; // Likely the element was removed, e.g. user was dragging a window that closed, e.g. user was dragging the startup window when the sequence advanced
-                    switch (event.operation.source?.element?.className) {
-                        case "window":
-                            updateRunningApp(event.operation.source?.id as number, (draft) => {
-                                draft.pos = {
-                                    top: resultRect?.top ?? 0,
-                                    left: resultRect?.left ?? 0,
-                                    bottom: resultRect?.bottom ?? 0,
-                                    right: resultRect?.right ?? 0,
-                                }
-                            });
-                            break;
-                        default:
-                            console.error("Unknown element class name: " + event.operation.source?.element?.className) // TODO: error window for this?
-                            break;
-                    }
-                }}
+                                  onDragStart={(event) => {
+                                      if (event.operation.source?.element?.className === "window") {
+                                          focusApp(parseInt(event.operation.source?.id.toString().replace("window-", "")));
+                                      }
+                                  }}
+                                  onDragEnd={(event) => {
+                                      const resultRect = event.operation.source?.element?.getBoundingClientRect();
+                                      if (!resultRect || resultRect.height == 0) return; // Likely the element was removed, e.g. user was dragging a window that closed, e.g. user was dragging the startup window when the sequence advanced
+                                      switch (event.operation.source?.element?.className) {
+                                          case "window":
+                                              updateRunningApp(event.operation.source?.id as number, (draft) => {
+                                                  draft.pos = {
+                                                      top: resultRect?.top ?? 0,
+                                                      left: resultRect?.left ?? 0,
+                                                      bottom: resultRect?.bottom ?? 0,
+                                                      right: resultRect?.right ?? 0,
+                                                  }
+                                              });
+                                              break;
+                                          default:
+                                              console.error("Unknown element class name: " + event.operation.source?.element?.className) // TODO: error window for this?
+                                              break;
+                                      }
+                                  }}
                 >
                     <SlowLoad duration={DESKTOP_LOAD_START}>
                         <div id="desktop">
