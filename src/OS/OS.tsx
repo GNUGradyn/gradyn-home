@@ -3,7 +3,7 @@ import type AppModel from "../apps/AppModel.ts";
 import type {AppProps} from "../apps/AppModel.ts";
 import RunningApp from "./RunningApp.tsx";
 import Startup from "../apps/Startup.tsx";
-import {DragDropProvider, PointerSensor} from "@dnd-kit/react";
+import {DragDropProvider} from "@dnd-kit/react";
 import {produce} from "immer";
 import "./OS.css";
 import SlowLoad from "./SlowLoad.tsx";
@@ -44,6 +44,7 @@ const OS = () => {
     const [time, setTime] = useState("");
     const [runningApps, setRunningApps] = useState<RunningApp[]>([]);
     const dragAreaRef = useRef<HTMLDivElement>(null);
+    const [windowStackingOrder, setWindowStackingOrder] = useState<number[]>([]);
 
     // isTechnicalError can be set to false to show "vanity" errors for easter eggs and such that are not actually issues
     const showError = useCallback((message: string, isTechnicalError: boolean = true) => {
@@ -143,12 +144,14 @@ const OS = () => {
             }
         }
 
+        const newAppId = ++currentId.current;
+
+        setWindowStackingOrder(prev => [...prev, newAppId]);
+
         setRunningApps(prev => {
             if (app.singleInstance && prev.some(x => x.app.identifier === app.identifier)) {
                 return prev;
             }
-
-            const newAppId = ++currentId.current;
 
             return [
                 ...prev,
@@ -162,6 +165,10 @@ const OS = () => {
             ];
         });
     }, [closeApp, findNextWindowStartPosition]);
+
+    const focusApp = useCallback((appId: number) => {
+        setWindowStackingOrder(prev => [...prev.filter(x => x !== appId), appId]);
+    }, []);
 
     useEffect(() => {
         const windowTimeout = setTimeout(() => {
@@ -207,7 +214,13 @@ const OS = () => {
     return (
         <div id="OS">
             <div id="drag-area" ref={dragAreaRef}>
-                <DragDropProvider onDragEnd={(event) => {
+                <DragDropProvider
+                    onDragStart={(event) => {
+                        if (event.operation.source?.element?.className === "window") {
+                            focusApp(parseInt(event.operation.source?.id.toString().replace("window-", "")));
+                        }
+                    }}
+                    onDragEnd={(event) => {
                     const resultRect = event.operation.source?.element?.getBoundingClientRect();
                     if (!resultRect || resultRect.height == 0) return; // Likely the element was removed, e.g. user was dragging a window that closed, e.g. user was dragging the startup window when the sequence advanced
                     switch (event.operation.source?.element?.className) {
@@ -245,6 +258,8 @@ const OS = () => {
                             setPos={(pos) => updateRunningApp(runningApp.id, (draft) => draft.pos = pos)}
                             appArgs={runningApp.appArgs}
                             close={() => closeApp(runningApp.id)}
+                            focus={() => focusApp(runningApp.id)}
+                            zIndex={windowStackingOrder.indexOf(runningApp.id)}
                         />
                     )}
                 </DragDropProvider>

@@ -8,13 +8,15 @@ import {ResizeHandleDirection} from "../models/ResizeHandleDirection.ts";
 import {Controls} from "../models/Controls.ts";
 
 interface RunningAppProps {
-    app: AppModel,
-    id: number,
-    pos: AppPos,
+    app: AppModel
+    id: number
+    pos: AppPos
     setPos: (pos: AppPos) => void
     // See comment on RunningApp interface for why this is any
     appArgs: any // eslint-disable-line @typescript-eslint/no-explicit-any
     close: () => void
+    focus: () => void
+    zIndex: number
 }
 
 const MIN_VERTICAL_SIZE = 100;
@@ -26,7 +28,7 @@ const RunningApp = (props: RunningAppProps) => {
     });
 
     return (
-        <div className="window" ref={draggableRef} style={{
+        <div id={"window-" + props.id} className="window" onMouseDown={props.focus} ref={draggableRef} style={{
             top: props.pos.top,
             left: props.pos.left,
             // using width and height instead of right and bottom because right and bottom are relative to the right and the bottom respectively.
@@ -36,7 +38,8 @@ const RunningApp = (props: RunningAppProps) => {
             // But it is the path of least resistance because after the resize it can just be remeasured per usual like after a move, and resizing the
             // browser window will just work smoothly without any effort
             width: props.pos.right - props.pos.left,
-            height: props.pos.bottom - props.pos.top
+            height: props.pos.bottom - props.pos.top,
+            zIndex: props.zIndex
         }}>
             <ResizeHandle direction={ResizeHandleDirection.LEFT} onDrag={(position) => {
                 props.setPos({...props.pos, left: Math.min(position.x, props.pos.right - MIN_HORIZONTAL_SIZE)});
