@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import type AppModel from "../apps/AppModel.ts";
-import type {AppProps} from "../apps/AppModel.ts";
+import type { AppProps } from "../apps/AppModel.ts";
 import RunningApp from "./RunningApp.tsx";
 import Startup from "../apps/Startup.tsx";
 import {DragDropProvider} from "@dnd-kit/react";
@@ -16,6 +16,9 @@ import DefaultAppIcon from "../assets/img/windows98-icons/ico/executable.ico";
 import DesktopIcon from "./DesktopIcon.tsx";
 import {RestrictToElement} from '@dnd-kit/dom/modifiers';
 import TaskbarWindow from "./TaskbarWindow.tsx";
+import type {AppPos} from "../models/RunningApp.ts";
+import type RunningAppModel from "../models/RunningApp.ts";
+import {AppState} from "../models/RunningApp.ts";
 
 const DESKTOP_LOAD_START = 6000;
 // How far to shift the window down and to the right when launching an app and the top left corner is too close to another windows top left corner
@@ -24,27 +27,10 @@ const WINDOW_OVERLAP_SHIFT_INTERVAL = 50;
 const WINDOW_OVERLAP_MARGIN = 10;
 const STARTUP_APP_SIZE = 100;
 
-// Running apps is a heterogeneous collection: each app has its own props type.
-// `runApp` checks that appArgs matches the app before insertion, then we erase
-// that specific props type here because typescript cannot represent "some P extends AppProps".
-interface RunningApp {
-    app: AppModel<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-    id: number;
-    pos: AppPos;
-    appArgs?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-}
-
-export interface AppPos {
-    top: number;
-    bottom: number;
-    left: number;
-    right: number;
-}
-
 const OS = () => {
     const currentId = useRef(0);
     const [time, setTime] = useState("");
-    const [runningApps, setRunningApps] = useState<RunningApp[]>([]);
+    const [runningApps, setRunningApps] = useState<RunningAppModel[]>([]);
     const dragAreaRef = useRef<HTMLDivElement>(null);
     const [windowStackingOrder, setWindowStackingOrder] = useState<number[]>([]);
     const [focusedWindow, setFocusedWindow] = useState<number>(-1);
@@ -130,8 +116,8 @@ const OS = () => {
         });
     }, []);
 
-    // See RunningApp interface for explanation of any being used here
-    const runApp = useCallback(<P extends AppProps = AppProps>(app: AppModel<P>, pos?: AppPos, appArgs?: any) => {
+    // See RunningAppModel interface for explanation of any being used here
+    const runApp = useCallback(<P extends AppProps = AppProps>(app: AppModel<P>, pos?: AppPos, appArgs?: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!pos) {
             const newPos = findNextWindowStartPosition(app.initialHeight, app.initialWidth);
 
@@ -162,7 +148,8 @@ const OS = () => {
                     app,
                     id: newAppId,
                     pos,
-                    appArgs: appArgs as AppProps
+                    appArgs: appArgs as AppProps,
+                    appState: AppState.Open
                 }
             ];
         });
@@ -209,14 +196,16 @@ const OS = () => {
             clearTimeout(loadingTimeout);
             clearInterval(clockInterval);
         };
-    }, []);
+    }, [closeApp, runApp, showError]);
 
-    const updateRunningApp = useCallback((app: number, producer: (draft: RunningApp) => void) => {
+    const updateRunningApp = useCallback((app: number, producer: (draft: RunningAppModel) => void) => {
         setRunningApps(prev => produce(prev, draft => {
             const index = draft.findIndex(runningApp => runningApp.id === app);
             producer(draft[index]);
         }));
     }, []);
+
+    const setAppState = (id: number, state: AppState) => updateRunningApp(id, (draft) => draft.appState = state);
 
     useEffect(() => {
         let timer: number;
@@ -253,7 +242,9 @@ const OS = () => {
                 <DragDropProvider modifiers={[RestrictToElement.configure({element: dragAreaRef.current})]}
                                   onDragStart={(event) => {
                                       if (event.operation.source?.element?.className === "window") {
-                                          focusApp(parseInt(event.operation.source?.id.toString().replace("window-", "")));
+                                          const appId = parseInt(event.operation.source?.id.toString().replace("window-", ""));
+                                          focusApp(appId);
+                                          setAppState(appId, AppState.Open);
                                       }
                                   }}
                                   onDragEnd={(event) => {
@@ -302,6 +293,8 @@ const OS = () => {
                             close={() => closeApp(runningApp.id)}
                             focus={() => focusApp(runningApp.id)}
                             zIndex={windowStackingOrder.indexOf(runningApp.id)}
+                            appState={runningApp.appState}
+                            setAppState={(state)=>{setAppState(runningApp.id, state)}}
                         />
                     )}
                 </DragDropProvider>

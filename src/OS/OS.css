@@ -38,6 +38,18 @@
     padding: 5px;
 }
 
+.taskbar-button.taskbar-window.active {
+    background:
+            conic-gradient(
+                    #c0c0c0 25%,
+                    #ffffff 0 50%,
+                    #c0c0c0 0 75%,
+                    #ffffff 0
+            );
+
+    background-size: 2px 2px;
+}
+
 .divider-1 {
     margin: 2px;
     width: 0;

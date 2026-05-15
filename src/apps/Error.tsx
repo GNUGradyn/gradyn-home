@@ -3,6 +3,7 @@ import type IApp from "./AppModel.ts";
 import {type AppProps} from "./AppModel.ts";
 import Icon from "../assets/img/windows98-icons/ico/msg_error.ico";
 import "./Startup.css";
+import {Controls} from "../models/Controls.ts";
 
 interface ErrorProps extends AppProps {
     message: string;
@@ -32,7 +33,8 @@ const Error: IApp<ErrorProps> = {
     isHidden: true,
     singleInstance: false,
     initialWidth: 0, // not used for this window
-    initialHeight: 0 // not used for this window
+    initialHeight: 0, // not used for this window
+    controls: Controls.CloseOnly
 }
 
 export default Error;
