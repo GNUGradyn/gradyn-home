@@ -165,7 +165,7 @@ const OS = () => {
     }, []);
 
     useEffect(() => {
-        if (INITIAL_BOOT_STATE === BootState.BIOS) showError('This site is very WIP. Most stuff does not work yet. You have been warned', false);;
+        if (INITIAL_BOOT_STATE === BootState.BIOS) showError('This site is very WIP. Most stuff does not work yet. You have been warned', false);
 
         let startupWindowId = -1;
 
@@ -196,7 +196,7 @@ const OS = () => {
             clearTimeout(loadingTimeout);
             clearInterval(clockInterval);
         };
-    }, [closeApp, runApp, showError]);
+    }, []);
 
     const updateRunningApp = useCallback((app: number, producer: (draft: RunningAppModel) => void) => {
         setRunningApps(prev => produce(prev, draft => {
