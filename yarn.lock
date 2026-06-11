@@ -194,73 +194,86 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dnd-kit/abstract@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "@dnd-kit/abstract@npm:0.3.2"
+"@dnd-kit/abstract@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@dnd-kit/abstract@npm:0.4.0"
   dependencies:
-    "@dnd-kit/geometry": "npm:^0.3.2"
-    "@dnd-kit/state": "npm:^0.3.2"
+    "@dnd-kit/geometry": "npm:^0.4.0"
+    "@dnd-kit/state": "npm:^0.4.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/b4443f867576718791a57f10a5a422d06273753f4ef5b1025bda05c94aefee9928fbb8b845a5ceb2f481424fbc6c2c67fb7a2acc1f54a4d336a12b627bb53fb5
+  checksum: 10c0/aabe218c13e371f2760a3620b71a69b863af77ceb1b147515abef0ed9078f83bc37ae600cad98db6884d9f445c5b8cf9b8cbe4a381ce43aaf886b53a640895a6
   languageName: node
   linkType: hard
 
-"@dnd-kit/collision@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "@dnd-kit/collision@npm:0.3.2"
+"@dnd-kit/collision@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@dnd-kit/collision@npm:0.4.0"
   dependencies:
-    "@dnd-kit/abstract": "npm:^0.3.2"
-    "@dnd-kit/geometry": "npm:^0.3.2"
+    "@dnd-kit/abstract": "npm:^0.4.0"
+    "@dnd-kit/geometry": "npm:^0.4.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/dde6c6c3b692460402f3b60aaf45d6f13dd329bfdce825edd31a82b2193c46a032ea77dd96fc9342bd04cb0069dec1a88ae383086fb2979da317684cf0ea6687
+  checksum: 10c0/8f6895cdc2742e6720426fdd59439791aa73eecc1e57578a737981b31bd79c3feafc11977c5e5e320c21cc6d01dd60cdcefa17dbeaccf12b65617f2bda359d0f
   languageName: node
   linkType: hard
 
-"@dnd-kit/dom@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "@dnd-kit/dom@npm:0.3.2"
+"@dnd-kit/dom@file:./pkg/dnd-kit-dom-0.4.0.tgz::locator=gradyn-home%40workspace%3A.":
+  version: 0.4.0
+  resolution: "@dnd-kit/dom@file:./pkg/dnd-kit-dom-0.4.0.tgz#./pkg/dnd-kit-dom-0.4.0.tgz::hash=197bdc&locator=gradyn-home%40workspace%3A."
   dependencies:
-    "@dnd-kit/abstract": "npm:^0.3.2"
-    "@dnd-kit/collision": "npm:^0.3.2"
-    "@dnd-kit/geometry": "npm:^0.3.2"
-    "@dnd-kit/state": "npm:^0.3.2"
+    "@dnd-kit/abstract": "npm:^0.4.0"
+    "@dnd-kit/collision": "npm:^0.4.0"
+    "@dnd-kit/geometry": "npm:^0.4.0"
+    "@dnd-kit/state": "npm:^0.4.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/4e759457b8bf8e76452574d5ef80dd3868e03d7b72ea6fac7c63a8f5c86ddc182e66300c6c46b8427159fa91becaa9039d980a1cc11f9a68f1dca54d2a9b1c50
+  checksum: 10c0/f38c5aeb501c09e5b3c317e51014a409bf9784445925d8be90d4e3f39c0ed6fadbc94261afd15e66ccca7b9e2c1c0a82dc499892961d102b74f08d51db837801
   languageName: node
   linkType: hard
 
-"@dnd-kit/geometry@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "@dnd-kit/geometry@npm:0.3.2"
+"@dnd-kit/dom@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@dnd-kit/dom@npm:0.4.0"
   dependencies:
-    "@dnd-kit/state": "npm:^0.3.2"
+    "@dnd-kit/abstract": "npm:^0.4.0"
+    "@dnd-kit/collision": "npm:^0.4.0"
+    "@dnd-kit/geometry": "npm:^0.4.0"
+    "@dnd-kit/state": "npm:^0.4.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/eed63886251a3a81ceebb20b35538e274d357fc65015697285daa9503fa154b3525bee3159cc864a496c926f22c124b708335812416185134553baf62c266cea
+  checksum: 10c0/53450a4c504872863b9e5dcdf113be189144bdfb4f7ed13da98eab5cf6d5921f16b6504a22623923fdefa27d5c4025c73c2d1f9fc3e68feb6d3ce20b8afe88d0
   languageName: node
   linkType: hard
 
-"@dnd-kit/react@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "@dnd-kit/react@npm:0.3.2"
+"@dnd-kit/geometry@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@dnd-kit/geometry@npm:0.4.0"
   dependencies:
-    "@dnd-kit/abstract": "npm:^0.3.2"
-    "@dnd-kit/dom": "npm:^0.3.2"
-    "@dnd-kit/state": "npm:^0.3.2"
+    "@dnd-kit/state": "npm:^0.4.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10c0/1a3e5eb87c3ffc6927a6a91b0a776c638a75bb1a267c69de096096875f39557023ffd423243a763198c421fceed09d939ae7570c3cbadabdd5d75d7ec7b460e7
+  languageName: node
+  linkType: hard
+
+"@dnd-kit/react@file:./pkg/dnd-kit-react-0.4.0.tgz::locator=gradyn-home%40workspace%3A.":
+  version: 0.4.0
+  resolution: "@dnd-kit/react@file:./pkg/dnd-kit-react-0.4.0.tgz#./pkg/dnd-kit-react-0.4.0.tgz::hash=5e0f7f&locator=gradyn-home%40workspace%3A."
+  dependencies:
+    "@dnd-kit/abstract": "npm:^0.4.0"
+    "@dnd-kit/dom": "npm:^0.4.0"
+    "@dnd-kit/state": "npm:^0.4.0"
     tslib: "npm:^2.6.2"
   peerDependencies:
     react: ^18.0.0 || ^19.0.0
     react-dom: ^18.0.0 || ^19.0.0
-  checksum: 10c0/92a5b2f4005d9684a2a86efcfc56898f8e98a045dea85862858afb6406b08ba559e52dc1b151777d50577c7cb1aa040bf98c8410df7fda11862ebe128a68fd10
+  checksum: 10c0/3af5b91504cf027a4e299d556980e71ab3ee63361edd66df3149e4e153ab88ecbd57f8b6af96fdaf7e0242fdfe8c0eb93cfb4def4c08c2deb3a6a4841f86991f
   languageName: node
   linkType: hard
 
-"@dnd-kit/state@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "@dnd-kit/state@npm:0.3.2"
+"@dnd-kit/state@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@dnd-kit/state@npm:0.4.0"
   dependencies:
     "@preact/signals-core": "npm:^1.10.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/9fcbb8a1e7924bfb5eaeb65a34fcd65bb37f739a85eaa303ae3562a1ef9aae4156c60baf397e4923cdb038b908ad18758fb42fcd6cde1ca45dace26d052c96fa
+  checksum: 10c0/22ced96e6477095c5a2e6176438f6b56bb343e5cf52a2bbe2eeeda2f31d8ba25b848c1e6b5c79112e3dcaf53add1fdc598a21e0bbf7486a5f3c06001a4db5791
   languageName: node
   linkType: hard
 
@@ -526,9 +539,9 @@ __metadata:
   linkType: hard
 
 "@preact/signals-core@npm:^1.10.0":
-  version: 1.14.0
-  resolution: "@preact/signals-core@npm:1.14.0"
-  checksum: 10c0/b9d39899bd24fae59c8b1a70d940dedb8f952d2e530b3cdc52c79de2df1f096b347fce6a52ed6cfd6f98dfe710741abe9f509ee746789023ff1dbde90152016d
+  version: 1.14.2
+  resolution: "@preact/signals-core@npm:1.14.2"
+  checksum: 10c0/898e6e22a5d2a11bd3d5b109c8d9bacff0e9bc9f23c01455901b7feab8c441dc03fdd53cfd7b5f9275b0df052fcaeb8c8928f537cebb190d9e02a6f2a3ac441e
   languageName: node
   linkType: hard
 
@@ -1429,8 +1442,8 @@ __metadata:
   dependencies:
     98.css: "git+https://github.com/GNUGradyn/98.css.git"
     "@chenglou/pretext": "npm:^0.0.7"
-    "@dnd-kit/dom": "npm:^0.3.2"
-    "@dnd-kit/react": "npm:^0.3.2"
+    "@dnd-kit/dom": ./pkg/dnd-kit-dom-0.4.0.tgz
+    "@dnd-kit/react": ./pkg/dnd-kit-react-0.4.0.tgz
     "@eslint/js": "npm:^9.39.4"
     "@types/node": "npm:^24.12.0"
     "@types/react": "npm:^19.2.14"

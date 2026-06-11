@@ -12,8 +12,8 @@
   "dependencies": {
     "98.css": "git+https://github.com/GNUGradyn/98.css.git",
     "@chenglou/pretext": "^0.0.7",
-    "@dnd-kit/dom": "^0.3.2",
-    "@dnd-kit/react": "^0.3.2",
+    "@dnd-kit/dom": "./pkg/dnd-kit-dom-0.4.0.tgz",
+    "@dnd-kit/react": "./pkg/dnd-kit-react-0.4.0.tgz",
     "immer": "^11.1.4",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
