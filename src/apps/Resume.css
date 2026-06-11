@@ -1,0 +1,9 @@
+.resume-url {
+    display: flex;
+    padding: 2px;
+    gap: 2px;
+}
+
+.resume-url input {
+    flex: 1;
+}
