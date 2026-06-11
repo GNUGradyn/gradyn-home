@@ -15,6 +15,7 @@ import Error from "../apps/Error.tsx";
 import DefaultAppIcon from "../assets/img/windows98-icons/ico/executable.ico";
 import DesktopIcon from "./DesktopIcon.tsx";
 import {RestrictToElement} from '@dnd-kit/dom/modifiers';
+import {Feedback} from '@dnd-kit/dom';
 import TaskbarWindow from "./TaskbarWindow.tsx";
 import type {AppPos} from "../models/RunningApp.ts";
 import type RunningAppModel from "../models/RunningApp.ts";
@@ -240,6 +241,11 @@ const OS = () => {
                 }
             }}>
                 <DragDropProvider modifiers={[RestrictToElement.configure({element: dragAreaRef.current})]}
+                                  // Use the "move" feedback strategy so dnd-kit drags the real window element instead of
+                                  // cloning it into a placeholder. The default strategy calls placeholder.replaceWith(element)
+                                  // on drop, which re-inserts the window node into the DOM and forces any <iframe> inside it
+                                  // (e.g. Resume.pdf) to reload. "move" never reparents the node, so the iframe is preserved.
+                                  plugins={(defaults) => [...defaults, Feedback.configure({feedback: 'move'})]}
                                   onDragStart={(event) => {
                                       if (event.operation.source?.element?.className === "window") {
                                           const appId = parseInt(event.operation.source?.id.toString().replace("window-", ""));
