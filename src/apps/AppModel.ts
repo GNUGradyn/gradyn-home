@@ -1,4 +1,4 @@
-import  {type ComponentType} from "react";
+import {type ComponentType} from "react";
 import type {Controls} from "../models/Controls.ts";
 
 export interface AppProps {
@@ -8,7 +8,13 @@ export interface AppProps {
 /***
  Interface representing an "installed" application.
 
- `name` is the name to be displayed on the taskbar/etc
+ `name` is the name to be app icon
+
+ `label` is the name to be displayed on the navbar and the taskbar - defaults to `name`
+
+ 'icon' is the image to be used for the app icon
+
+ `label_icon` is the icon to be displayed on the navbar and the taskbar - defaults to `icon`
 
  `identifier` is a unique string with no whitespace to identify the application
 
@@ -19,6 +25,8 @@ export interface AppProps {
  */
 type AppModel<T extends AppProps = AppProps> = {
     name: string;
+    label?: string;
+    labelIcon?: string;
     icon: string | null;
     identifier: string;
     component: ComponentType<T>;
@@ -28,6 +36,7 @@ type AppModel<T extends AppProps = AppProps> = {
     initialHeight: number;
     initialWidth: number;
     controls?: Controls;
+    disableMargin?: boolean;
 }
 
-export type { AppModel as default };
+export type {AppModel as default};

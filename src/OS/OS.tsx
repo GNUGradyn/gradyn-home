@@ -312,7 +312,7 @@ const OS = () => {
                     <div style={{width: 100}}/>
                     <div className="divider-1"></div>
                     <div className="divider-2"></div>
-                    {runningApps.map(x => <TaskbarWindow focused={focusedWindow === x.id} key={x.id} icon={x.app.icon} name={x.app.name} focusApp={() => focusApp(x.id)} />)}
+                    {runningApps.map(x => <TaskbarWindow focused={focusedWindow === x.id} key={x.id} icon={x.app.labelIcon ?? x.app.icon} name={x.app.label ?? x.app.name} focusApp={() => focusApp(x.id)} />)}
                     <div id="taskbar-right">
                         <div className="divider-1"></div>
                         <div className="status-field-border" id="status-menu">

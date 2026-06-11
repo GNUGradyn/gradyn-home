@@ -86,8 +86,8 @@ const RunningApp = (props: RunningAppProps) => {
             }}/>
             <div className={["title-bar", !props.focused && "inactive"].join(" ")}>
                 <div className="title-bar-text" ref={draggableHandleRef}>
-                    {props.app.icon && <img src={props.app.icon} alt=""/>}
-                    {props.app.name}
+                    {props.app.icon && <img src={props.app.labelIcon ?? props.app.icon} alt=""/>}
+                    {props.app.label ?? props.app.name}
                 </div>
                 <div className="title-bar-controls" data-no-dnd="true">
                     {
@@ -100,7 +100,7 @@ const RunningApp = (props: RunningAppProps) => {
                     {props.app.controls !== Controls.None && <button aria-label="Close" onClick={props.close}></button>}
                 </div>
             </div>
-            <div className="window-body">
+            <div className="window-body" style={props.app.disableMargin ? {margin: 0} : undefined}>
                 <props.app.component {...props.appArgs} close={props.close}/>
             </div>
         </div>

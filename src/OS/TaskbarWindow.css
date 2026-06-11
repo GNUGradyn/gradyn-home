@@ -7,4 +7,5 @@
     justify-content: flex-start;
     overflow: clip;
     overflow-clip-margin: content-box;
+    text-wrap: nowrap;
 }

@@ -23,6 +23,7 @@
     overflow: auto;
     text-wrap: nowrap;
     margin-bottom: 0 !important;
+    flex: 1;
 }
 
 .window {
