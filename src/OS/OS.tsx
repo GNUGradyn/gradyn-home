@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import type AppModel from "../apps/AppModel.ts";
-import type { AppProps } from "../apps/AppModel.ts";
+import type {AppProps} from "../apps/AppModel.ts";
 import RunningApp from "./RunningApp.tsx";
 import Startup from "../apps/Startup.tsx";
 import {DragDropProvider} from "@dnd-kit/react";
@@ -35,6 +35,8 @@ const OS = () => {
     const dragAreaRef = useRef<HTMLDivElement>(null);
     const [windowStackingOrder, setWindowStackingOrder] = useState<number[]>([]);
     const [focusedWindow, setFocusedWindow] = useState<number>(-1);
+    const [showStartMenu, setShowStartMenu] = useState(false);
+    const [startMenuSize, setStartMenuSize] = useState(0);
 
     // isTechnicalError can be set to false to show "vanity" errors for easter eggs and such that are not actually issues
     const showError = useCallback((message: string, isTechnicalError: boolean = true) => {
@@ -173,11 +175,11 @@ const OS = () => {
         const windowTimeout = setTimeout(() => {
             if (INITIAL_BOOT_STATE !== BootState.BIOS) return;
             startupWindowId = runApp(Startup, {
-                    top: window.innerHeight / 2 - STARTUP_APP_SIZE,
-                    left: window.innerWidth / 2 - STARTUP_APP_SIZE,
-                    bottom: window.innerHeight / 2 + STARTUP_APP_SIZE,
-                    right: window.innerWidth / 2 + STARTUP_APP_SIZE
-                });
+                top: window.innerHeight / 2 - STARTUP_APP_SIZE,
+                left: window.innerWidth / 2 - STARTUP_APP_SIZE,
+                bottom: window.innerHeight / 2 + STARTUP_APP_SIZE,
+                right: window.innerWidth / 2 + STARTUP_APP_SIZE
+            });
         }, 500);
 
         const loadingTimeout = setTimeout(() => {
@@ -207,6 +209,29 @@ const OS = () => {
     }, []);
 
     const setAppState = (id: number, state: AppState) => updateRunningApp(id, (draft) => draft.appState = state);
+
+    useEffect(() => {
+        if (!showStartMenu) return;
+        const frame = requestAnimationFrame(() => setStartMenuSize(500));
+        return () => cancelAnimationFrame(frame);
+    }, [showStartMenu]);
+
+    useEffect(() => {
+        const handleBlur = () => {
+            // Using an animation frame allows the page to wait for the document.activeElement to update without resorting to a timeout
+            requestAnimationFrame(() => {
+                const active = document.activeElement;
+
+                if (active?.tagName.toLowerCase() === "iframe") {
+                    focusApp(parseInt(active.closest(".window")!.id!.split("-")[1]));
+                }
+            });
+        }
+
+        window.addEventListener("blur", handleBlur);
+
+        return () => window.removeEventListener("blur", handleBlur);
+    }, [focusApp]);
 
     useEffect(() => {
         let timer: number;
@@ -241,18 +266,14 @@ const OS = () => {
                 }
             }}>
                 <DragDropProvider modifiers={[RestrictToElement.configure({element: dragAreaRef.current})]}
-                                  // Use the "move" feedback strategy so dnd-kit drags the real window element instead of
-                                  // cloning it into a placeholder. The default strategy calls placeholder.replaceWith(element)
-                                  // on drop, which re-inserts the window node into the DOM and forces any <iframe> inside it
-                                  // (e.g. Resume.pdf) to reload. "move" never reparents the node, so the iframe is preserved.
-                                  plugins={(defaults) => [...defaults, Feedback.configure({feedback: 'move'})]}
-                                  onDragStart={(event) => {
+                                  onBeforeDragStart={(event) => {
                                       if (event.operation.source?.element?.className === "window") {
                                           const appId = parseInt(event.operation.source?.id.toString().replace("window-", ""));
-                                          focusApp(appId);
                                           setAppState(appId, AppState.Open);
                                       }
                                   }}
+                    // use the `move` strategy so the contents dont remount on drop
+                                  plugins={(defaults) => [...defaults, Feedback.configure({feedback: 'move'})]}
                                   onDragEnd={(event) => {
                                       const resultRect = event.operation.source?.element?.getBoundingClientRect();
                                       if (!resultRect || resultRect.height == 0) return; // Likely the element was removed, e.g. user was dragging a window that closed, e.g. user was dragging the startup window when the sequence advanced
@@ -300,7 +321,9 @@ const OS = () => {
                             focus={() => focusApp(runningApp.id)}
                             zIndex={windowStackingOrder.indexOf(runningApp.id)}
                             appState={runningApp.appState}
-                            setAppState={(state)=>{setAppState(runningApp.id, state)}}
+                            setAppState={(state) => {
+                                setAppState(runningApp.id, state)
+                            }}
                         />
                     )}
                 </DragDropProvider>
@@ -308,7 +331,13 @@ const OS = () => {
             <SlowLoad duration={DESKTOP_LOAD_START}>
                 <div id="taskbar">
                     <SlowLoad>
-                        <button className="taskbar-button">
+                        <button className="taskbar-button" onClick={() => {
+                            if (showStartMenu) {
+                                setStartMenuSize(0);
+                            } else {
+                                setShowStartMenu(true);
+                            }
+                        }}>
                             <img id="logo" src={Logo} alt=""/>
                             <b>Start</b>
                         </button>
@@ -318,7 +347,10 @@ const OS = () => {
                     <div style={{width: 100}}/>
                     <div className="divider-1"></div>
                     <div className="divider-2"></div>
-                    {runningApps.map(x => <TaskbarWindow focused={focusedWindow === x.id} key={x.id} icon={x.app.labelIcon ?? x.app.icon} name={x.app.label ?? x.app.name} focusApp={() => focusApp(x.id)} />)}
+                    {runningApps.map(x => <TaskbarWindow focused={focusedWindow === x.id} key={x.id}
+                                                         icon={x.app.labelIcon ?? x.app.icon}
+                                                         name={x.app.label ?? x.app.name}
+                                                         focusApp={() => focusApp(x.id)}/>)}
                     <div id="taskbar-right">
                         <div className="divider-1"></div>
                         <div className="status-field-border" id="status-menu">
@@ -327,6 +359,17 @@ const OS = () => {
                     </div>
                 </div>
             </SlowLoad>
+            {/*The start menu has the same styling as a button so just hijack the 98.css button styles*/}
+            {showStartMenu && (
+                <button id="start-menu" disabled style={{height: startMenuSize}}
+                        onTransitionEnd={() => {
+                            if (startMenuSize === 0) {
+                                setShowStartMenu(false);
+                            }
+                        }}
+                >
+                </button>
+            )}
         </div>
     )
 }
