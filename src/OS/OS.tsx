@@ -269,7 +269,26 @@ const OS = () => {
                                   onBeforeDragStart={(event) => {
                                       if (event.operation.source?.element?.className === "window") {
                                           const appId = parseInt(event.operation.source?.id.toString().replace("window-", ""));
-                                          setAppState(appId, AppState.Open);
+                                          const rect = event.operation.source?.element?.getBoundingClientRect();
+                                          const app = runningApps.find(x => x.id === appId);
+                                          if (!app) return;
+                                          if (app.appState === AppState.Maximized) {
+                                              // When unmaximizing a window, the window needs to stay in place relative to the top
+                                              // right corner and revert to the original size. If we do top left like usual,
+                                              // the window may shrink so that its entirely further left then the cursor and
+                                              // the cursor will not be over the window at all anymore while dragging.
+                                              // This is easy to demonstrate by commenting this out and dragging a maximized window
+                                              // from the top right
+                                              updateRunningApp(appId, (draft) => {
+                                                  if (dragAreaRef.current === null) return;
+                                                  draft.appState = AppState.Open;
+                                                  draft.pos.top = rect.top;
+                                                  draft.pos.right = rect.right;
+                                                  draft.pos.bottom = rect.top + (app.pos.bottom - app.pos.top)
+                                                  draft.pos.left = rect.right - (app.pos.right - app.pos.left)
+                                              })
+                                          }
+                                          focusApp(appId);
                                       }
                                   }}
                     // use the `move` strategy so the contents dont remount on drop
