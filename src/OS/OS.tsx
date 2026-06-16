@@ -269,27 +269,24 @@ const OS = () => {
                                   onBeforeDragStart={(event) => {
                                       if (event.operation.source?.element?.className === "window") {
                                           const appId = parseInt(event.operation.source?.id.toString().replace("window-", ""));
-                                          const rect = event.operation.source?.element?.getBoundingClientRect();
                                           const app = runningApps.find(x => x.id === appId);
+                                          const rect = event.operation.source?.element?.getBoundingClientRect();
                                           if (!app) return;
                                           if (app.appState === AppState.Maximized) {
-                                              // When unmaximizing a window, the window needs to stay in the right spot
-                                              // relative to either the top left or top right corner, whichever one is closer.
-                                              // if we dont do that, the resized window may be completely past the cursor
+                                              const pos = event.operation.position.current;
                                               updateRunningApp(appId, (draft) => {
                                                   if (dragAreaRef.current === null) return;
                                                   draft.appState = AppState.Open;
-                                                  if ((app.pos.right - app.pos.left) / 2 > event.operation.position.current.x - rect.left) {
-                                                      draft.pos.top = rect.top;
-                                                      draft.pos.left = rect.left;
-                                                      draft.pos.bottom = rect.top + (app.pos.bottom - app.pos.top)
-                                                      draft.pos.right = rect.left + (app.pos.right - app.pos.left)
-                                                  } else {
-                                                      draft.pos.top = rect.top;
-                                                      draft.pos.right = rect.right;
-                                                      draft.pos.bottom = rect.top + (app.pos.bottom - app.pos.top)
-                                                      draft.pos.left = rect.right - (app.pos.right - app.pos.left)
-                                                  }
+
+                                                  // the idea is to restore the window to the old dimensions, and put it in the same position relative to the cursor horizontally
+                                                  const offset = (pos.x - rect.left) / rect.width;
+                                                  const restoredWidth = app.pos.right - app.pos.left;
+
+                                                  draft.pos.left = pos.x - (restoredWidth * offset);
+                                                  draft.pos.right = draft.pos.left + restoredWidth;
+
+                                                  draft.pos.top = pos.y + 5;
+                                                  draft.pos.bottom = draft.pos.top + (app.pos.bottom - app.pos.top);
                                               })
                                           }
                                           focusApp(appId);
