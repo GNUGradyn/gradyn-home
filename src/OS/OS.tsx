@@ -285,7 +285,7 @@ const OS = () => {
                                                   draft.pos.left = pos.x - (restoredWidth * offset);
                                                   draft.pos.right = draft.pos.left + restoredWidth;
 
-                                                  draft.pos.top = pos.y + 5;
+                                                  draft.pos.top = pos.y - 10;
                                                   draft.pos.bottom = draft.pos.top + (app.pos.bottom - app.pos.top);
                                               })
                                           }
