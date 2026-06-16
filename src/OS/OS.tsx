@@ -221,7 +221,6 @@ const OS = () => {
             // I really tried to find a less ugly way to do this but animation frames didnt work consistently enough
             setTimeout(() => {
                 const active = document.activeElement;
-                console.log(active)
                 if (active?.tagName.toLowerCase() === "iframe") {
                     focusApp(parseInt(active.closest(".window")!.id!.split("-")[1]));
                 }
