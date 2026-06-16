@@ -218,14 +218,14 @@ const OS = () => {
 
     useEffect(() => {
         const handleBlur = () => {
-            // Using an animation frame allows the page to wait for the document.activeElement to update without resorting to a timeout
-            requestAnimationFrame(() => {
+            // I really tried to find a less ugly way to do this but animation frames didnt work consistently enough
+            setTimeout(() => {
                 const active = document.activeElement;
-
+                console.log(active)
                 if (active?.tagName.toLowerCase() === "iframe") {
                     focusApp(parseInt(active.closest(".window")!.id!.split("-")[1]));
                 }
-            });
+            }, 100);
         }
 
         window.addEventListener("blur", handleBlur);
