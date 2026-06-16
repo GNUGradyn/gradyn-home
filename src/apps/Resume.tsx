@@ -2,17 +2,11 @@ import type IApp from "./AppModel.ts";
 import {type AppProps} from "./AppModel.ts";
 import Icon from "../assets/img/windows98-icons/ico/certificate_2.ico";
 import LabelIcon from "../assets/img/agrorat.png"
-import "./Resume.css"
+import PDFView from "../components/PDFView.tsx";
 
 const Component = (props: AppProps) => {
     return (
-        <div style={{height: "100%", display: "flex", flexDirection: "column"}}>
-            <div className="resume-url">
-                <input type="text" value="https://gradyn.com/resume.pdf"/>
-                <button onClick={() => window.open("https://gradyn.com/resume.pdf", "_blank")}>Open In Host</button>
-            </div>
-            <iframe src="/resume.pdf" style={{flex: 1}}/>
-        </div>
+        <PDFView url="https://gradyn.com/resume.pdf" />
     )
 }
 

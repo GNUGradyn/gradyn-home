@@ -3,7 +3,7 @@ import {type AppProps} from "./AppModel.ts";
 import Loader from "../assets/img/loading.gif";
 import "./Startup.css";
 import {useEffect, useState} from "react";
-import {Controls} from "../models/Controls.ts";
+import {Controls} from "../types/Controls.ts";
 
 const Component = (props: AppProps) => {
     const [loadingDots, setLoadingDots] = useState(0);

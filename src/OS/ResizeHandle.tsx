@@ -1,5 +1,5 @@
 import "./ResizeHandle.css"
-import {ResizeHandleDirection} from "../models/ResizeHandleDirection.ts";
+import {ResizeHandleDirection} from "../types/ResizeHandleDirection.ts";
 import {type PointerEvent} from "react";
 
 interface ResizeHandleProps {

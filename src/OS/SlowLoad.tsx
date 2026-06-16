@@ -1,5 +1,5 @@
 import {createContext, type PropsWithChildren, useContext, useEffect, useState} from "react";
-import BootState, {INITIAL_BOOT_STATE} from "../models/BootState.ts";
+import BootState, {INITIAL_BOOT_STATE} from "../types/BootState.ts";
 
 interface SlowLoadProps extends PropsWithChildren {
     minDuration?: number;

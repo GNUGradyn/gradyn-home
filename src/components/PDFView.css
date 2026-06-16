@@ -1,0 +1,9 @@
+.pdfview-url {
+    display: flex;
+    padding: 2px;
+    gap: 2px;
+}
+
+.pdfview-url input {
+    flex: 1;
+}

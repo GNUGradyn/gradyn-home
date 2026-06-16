@@ -9,7 +9,7 @@ import "./OS.css";
 import SlowLoad from "./SlowLoad.tsx";
 import Logo from "../assets/img/g-os-bare.svg";
 import AppRegistry from "../AppRegistry.ts";
-import BootState, {INITIAL_BOOT_STATE} from "../models/BootState.ts";
+import BootState, {INITIAL_BOOT_STATE} from "../types/BootState.ts";
 import {layout, measureLineStats, prepareWithSegments} from "@chenglou/pretext";
 import Error from "../apps/Error.tsx";
 import DefaultAppIcon from "../assets/img/windows98-icons/ico/executable.ico";
@@ -17,9 +17,9 @@ import DesktopIcon from "./DesktopIcon.tsx";
 import {RestrictToElement} from '@dnd-kit/dom/modifiers';
 import {Feedback} from '@dnd-kit/dom';
 import TaskbarWindow from "./TaskbarWindow.tsx";
-import type {AppPos} from "../models/RunningApp.ts";
-import type RunningAppModel from "../models/RunningApp.ts";
-import {AppState} from "../models/RunningApp.ts";
+import type {AppPos} from "../types/RunningApp.ts";
+import type RunningAppModel from "../types/RunningApp.ts";
+import {AppState} from "../types/RunningApp.ts";
 
 const DESKTOP_LOAD_START = 6000;
 // How far to shift the window down and to the right when launching an app and the top left corner is too close to another windows top left corner
@@ -273,19 +273,23 @@ const OS = () => {
                                           const app = runningApps.find(x => x.id === appId);
                                           if (!app) return;
                                           if (app.appState === AppState.Maximized) {
-                                              // When unmaximizing a window, the window needs to stay in place relative to the top
-                                              // right corner and revert to the original size. If we do top left like usual,
-                                              // the window may shrink so that its entirely further left then the cursor and
-                                              // the cursor will not be over the window at all anymore while dragging.
-                                              // This is easy to demonstrate by commenting this out and dragging a maximized window
-                                              // from the top right
+                                              // When unmaximizing a window, the window needs to stay in the right spot
+                                              // relative to either the top left or top right corner, whichever one is closer.
+                                              // if we dont do that, the resized window may be completely past the cursor
                                               updateRunningApp(appId, (draft) => {
                                                   if (dragAreaRef.current === null) return;
                                                   draft.appState = AppState.Open;
-                                                  draft.pos.top = rect.top;
-                                                  draft.pos.right = rect.right;
-                                                  draft.pos.bottom = rect.top + (app.pos.bottom - app.pos.top)
-                                                  draft.pos.left = rect.right - (app.pos.right - app.pos.left)
+                                                  if ((app.pos.right - app.pos.left) / 2 > event.operation.position.current.x - rect.left) {
+                                                      draft.pos.top = rect.top;
+                                                      draft.pos.left = rect.left;
+                                                      draft.pos.bottom = rect.top + (app.pos.bottom - app.pos.top)
+                                                      draft.pos.right = rect.left + (app.pos.right - app.pos.left)
+                                                  } else {
+                                                      draft.pos.top = rect.top;
+                                                      draft.pos.right = rect.right;
+                                                      draft.pos.bottom = rect.top + (app.pos.bottom - app.pos.top)
+                                                      draft.pos.left = rect.right - (app.pos.right - app.pos.left)
+                                                  }
                                               })
                                           }
                                           focusApp(appId);

@@ -2,7 +2,7 @@ import './App.css'
 import {useEffect, useRef, useState} from "react";
 import BIOS from "./BIOS/BIOS.tsx";
 import OS from "./OS/OS.tsx";
-import BootState, {INITIAL_BOOT_STATE} from "./models/BootState.ts";
+import BootState, {INITIAL_BOOT_STATE} from "./types/BootState.ts";
 
 const App = () => {
     const [bootState, setbootState] = useState(INITIAL_BOOT_STATE);

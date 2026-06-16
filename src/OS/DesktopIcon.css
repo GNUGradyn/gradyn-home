@@ -9,9 +9,15 @@
     gap: 3px;
     cursor: pointer;
     user-select: none;
+    width: 65px;
 }
 
 .desktop-icon p {
     margin: 0;
     user-select: none;
+}
+
+.desktop-icon img {
+    width: 32px;
+    height: 32px;
 }

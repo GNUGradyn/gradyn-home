@@ -1,5 +1,5 @@
 import {type ComponentType} from "react";
-import type {Controls} from "../models/Controls.ts";
+import type {Controls} from "../types/Controls.ts";
 
 export interface AppProps {
     close: () => void;

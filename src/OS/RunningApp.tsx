@@ -3,9 +3,9 @@ import {useDraggable} from "@dnd-kit/react";
 import "./RunningApp.css";
 import "98.css";
 import ResizeHandle from "./ResizeHandle.tsx";
-import {ResizeHandleDirection} from "../models/ResizeHandleDirection.ts";
-import {Controls} from "../models/Controls.ts";
-import {type AppPos, AppState} from "../models/RunningApp.ts";
+import {ResizeHandleDirection} from "../types/ResizeHandleDirection.ts";
+import {Controls} from "../types/Controls.ts";
+import {type AppPos, AppState} from "../types/RunningApp.ts";
 
 interface RunningAppProps {
     app: AppModel

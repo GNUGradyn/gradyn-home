@@ -3,7 +3,7 @@ import type IApp from "./AppModel.ts";
 import {type AppProps} from "./AppModel.ts";
 import Icon from "../assets/img/windows98-icons/ico/msg_error.ico";
 import "./Startup.css";
-import {Controls} from "../models/Controls.ts";
+import {Controls} from "../types/Controls.ts";
 
 interface ErrorProps extends AppProps {
     message: string;
