@@ -1,9 +1,8 @@
 import type IApp from "./AppModel.ts";
 import {type AppProps} from "./AppModel.ts";
 import DoomIcon from "../assets/img/Doom.png"
-import DOSPlayer from "../components/DOSPlayer.tsx";
 
-const Component = (props: AppProps) => <DOSPlayer bundleUrl="/DOOM.jsdos" />
+const Component = (props: AppProps) => <iframe src="/DOOMPlayer/index.html" />
 
 const Doom: IApp<AppProps> = {
     name: "Doom.exe",

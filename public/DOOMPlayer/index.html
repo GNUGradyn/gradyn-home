@@ -1,0 +1,22 @@
+<!--This is a separate document because js-dos doesnt do a very good job of isolating its own styles/js-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>DOOM</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta charset="UTF-8"/>
+        <link rel="stylesheet" href="js-dos.css">
+        <script src="js-dos.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Dos(document.body, {
+                    url: "DOOM.jsdos",
+                    kiosk: true,
+                    autoStart: true
+                });
+            })
+        </script>
+    </head>
+    <body style="height: 100vh;">
+    </body>
+</html>
