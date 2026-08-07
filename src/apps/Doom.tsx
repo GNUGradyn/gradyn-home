@@ -2,7 +2,7 @@ import type IApp from "./AppModel.ts";
 import {type AppProps} from "./AppModel.ts";
 import DoomIcon from "../assets/img/Doom.png"
 
-const Component = (props: AppProps) => <iframe src="/DOOMPlayer/index.html" />
+const Component = (props: AppProps) => <iframe src="/DOOMPlayer/index.html" width="100%" height="100%" />
 
 const Doom: IApp<AppProps> = {
     name: "Doom.exe",
