@@ -9,7 +9,7 @@ RUN npm install -g corepack@latest --force && \
 # install git and clean cache before everything else for layer cache efficiency
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git && \
-    rm -rf /var/lib/apt/lists/* \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy package.json first, again for layer cache efficiency
 COPY package.json ./
