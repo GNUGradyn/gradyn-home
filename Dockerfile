@@ -11,10 +11,11 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends git && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy package.json first, again for layer cache efficiency
+# Copy packages first, again for layer cache efficiency
 COPY package.json ./
 COPY yarn.lock ./
 COPY ./.yarnrc.yml ./
+COPY ./pkg .
 RUN yarn
 
 COPY . .
