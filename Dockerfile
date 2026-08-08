@@ -8,6 +8,7 @@ RUN npm install -g corepack@latest --force && \
 
 # Copy package.json first for layer cache efficiency
 COPY package*.json ./
+COPY ./.yarnrc.yml ./
 RUN yarn
 
 COPY . .
