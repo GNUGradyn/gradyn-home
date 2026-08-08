@@ -1,5 +1,4 @@
-# Stage 1: Build the application
-FROM node:24-slim AS builder
+FROM node:25-slim AS builder
 WORKDIR /app
 
 # Copy package.json first for layer cache efficiency
