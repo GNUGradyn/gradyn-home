@@ -10,14 +10,6 @@ RUN npm install -g corepack@latest --force && \
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git && \
     rm -rf /var/lib/apt/lists/*
-
-# Copy packages first, again for layer cache efficiency
-COPY package.json ./
-COPY yarn.lock ./
-COPY ./.yarnrc.yml ./
-COPY ./pkg/ .pkg/
-RUN yarn
-
 COPY . .
 RUN yarn build
 
