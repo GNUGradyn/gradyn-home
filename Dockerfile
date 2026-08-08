@@ -1,6 +1,5 @@
 FROM node:25-slim AS builder
 WORKDIR /app
-RUN npm install -g corepack && corepack enable # corepack no longer included in node:25-slim
 
 # Copy package.json first for layer cache efficiency
 COPY package*.json ./
