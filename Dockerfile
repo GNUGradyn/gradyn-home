@@ -15,7 +15,7 @@ RUN apt-get update && \
 COPY package.json ./
 COPY yarn.lock ./
 COPY ./.yarnrc.yml ./
-COPY ./pkg .
+COPY ./pkg/ .pkg/
 RUN yarn
 
 COPY . .
