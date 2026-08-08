@@ -30,7 +30,7 @@ jobs:
           file: ./gradyn-api-2/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ secrets.REGISTRY_ADDRESS }}/gradynapi:latest
+          tags: ${{ secrets.REGISTRY_ADDRESS }}/gradyn-home:latest
       - name: Deploy to HBI Server
         uses: fjogeleit/http-request-action@v1
         with:
