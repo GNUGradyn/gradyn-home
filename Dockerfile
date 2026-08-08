@@ -12,7 +12,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* \
 
 # Copy package.json first, again for layer cache efficiency
-COPY package*.json ./
+COPY package.json ./
+COPY yarn.lock ./
 COPY ./.yarnrc.yml ./
 RUN yarn
 
