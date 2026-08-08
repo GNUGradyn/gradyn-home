@@ -1,5 +1,6 @@
 FROM node:25-slim AS builder
 WORKDIR /app
+RUN corepack enable
 
 # Copy package.json first for layer cache efficiency
 COPY package*.json ./
