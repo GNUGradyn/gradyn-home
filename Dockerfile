@@ -6,7 +6,12 @@ RUN npm install -g corepack@latest --force && \
         corepack enable && \
         corepack prepare yarn@3.6.1 --activate
 
-# Copy package.json first for layer cache efficiency
+# install git and clean cache before everything else for layer cache efficiency
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git && \
+    rm -rf /var/lib/apt/lists/* \
+
+# Copy package.json first, again for layer cache efficiency
 COPY package*.json ./
 COPY ./.yarnrc.yml ./
 RUN yarn
